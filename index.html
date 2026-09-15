@@ -1,0 +1,837 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frequent Flyers — League History</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127944;</text></svg>">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{color-scheme:light dark;
+--bg:#F2F2F7;--card:#FFFFFF;--text:#000000;--muted:#6D6D72;--faint:#AEAEB2;
+--hairline:#E3E3E8;--chip:#E9E9EE;--tint:#007AFF;--tabbg:rgba(250,250,252,.92);--tabinactive:#8E8E93;
+--green:#1F9D44;--red:#E5484D;--gold:#9A6200;--goldbg:#FBF3DF;--bannerbg:#101014;--bannerfg:#fff;--bannermut:#9a9aa2}
+@media (prefers-color-scheme:dark){:root{
+--bg:#000000;--card:#1C1C1E;--text:#FFFFFF;--muted:#98989F;--faint:#636366;
+--hairline:#38383A;--chip:#2C2C2E;--tint:#0A84FF;--tabbg:rgba(24,24,26,.92);--tabinactive:#8E8E93;
+--green:#30D158;--red:#FF453A;--gold:#FFD60A;--goldbg:#3A2E12;--bannerbg:#1C1C1E;--bannerfg:#fff;--bannermut:#98989F}}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);padding:0 0 24px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;-webkit-tap-highlight-color:transparent}
+header{padding:32px 16px 4px;max-width:720px;margin:0 auto}
+header .eyebrow{font-size:13px;color:var(--muted);margin-bottom:5px}
+header h1{font-size:34px;font-weight:700;letter-spacing:-.015em}
+.tabradio,.fradio{position:absolute;opacity:0;pointer-events:none}
+.pane{display:none}
+#t-weekly:checked ~ .wrap #pane-weekly,#t-records:checked ~ .wrap #pane-records,#t-seasons:checked ~ .wrap #pane-seasons,#t-scoring:checked ~ .wrap #pane-scoring,#t-drafts:checked ~ .wrap #pane-drafts{display:block;animation:paneIn .28s ease}
+.wrap{padding:0 16px;max-width:720px;margin:0 auto}
+.sechead{font-size:13px;color:var(--muted);margin:26px 0 8px;padding:0 16px}
+.card{background:var(--card);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.card.pad{padding:16px}
+.card h2{font-size:15px;font-weight:700;margin-bottom:4px;letter-spacing:-.01em}
+.card.pad h2{margin-bottom:10px}
+.note{font-size:12.5px;color:var(--faint);line-height:1.6}
+.card.pad .note{margin-top:10px}
+.tblwrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:520px;font-variant-numeric:tabular-nums;background:var(--card)}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--hairline);white-space:nowrap}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:600}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right}
+td b{font-weight:600}
+.pos{color:var(--green);font-weight:600}.neg{color:var(--red);font-weight:600}
+.was{color:var(--faint);font-size:12.5px}
+.pill{display:inline-block;background:var(--chip);color:var(--text);border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700;margin:3px 4px 3px 0}
+.pill.gold{background:var(--goldbg);color:var(--gold)}
+.cells{list-style:none;background:var(--card)}
+.cells li{font-size:15px;line-height:1.5;padding:12px 16px;border-bottom:1px solid var(--hairline);font-variant-numeric:tabular-nums}
+.cells li:last-child{border-bottom:none}
+.lede{font-size:15px;line-height:1.7;color:var(--text)}
+.lede p{margin-bottom:12px}
+.lede p:last-child{margin-bottom:0}
+.banner{background:var(--bannerbg);border-radius:14px;padding:26px 18px;margin-bottom:12px;text-align:center}
+.banner .t{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--bannermut);font-weight:600}
+.banner .b{font-size:25px;font-weight:700;letter-spacing:-.02em;color:var(--bannerfg);margin-top:10px;font-variant-numeric:tabular-nums}
+.banner .s{font-size:13px;color:var(--bannermut);margin-top:10px}
+.chipslabel{font-size:13px;color:var(--muted);padding:0 16px;margin:14px 0 8px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 16px 4px;margin:0 -16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chips label{flex:0 0 auto;background:var(--chip);color:var(--text);border-radius:999px;padding:12px 20px;font-size:15px;font-weight:600;white-space:nowrap;cursor:pointer;user-select:none;-webkit-user-select:none;transition:background-color .2s ease,color .2s ease}
+.yrblocks{margin-top:12px}
+.yrblock{margin-bottom:8px}
+footer{text-align:center;color:var(--faint);font-size:11.5px;margin-top:26px;padding:0 24px;line-height:1.7}
+.tabbar{position:sticky;bottom:0;z-index:20;display:flex;background:var(--tabbg);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--hairline);padding:8px 4px calc(10px + env(safe-area-inset-bottom,0px))}
+.tabbar label{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--tabinactive);font-size:10px;font-weight:500;cursor:pointer;user-select:none;-webkit-user-select:none;transition:color .2s ease}
+.tabbar label svg{width:25px;height:25px;display:block}
+#t-weekly:checked ~ .tabbar label[for="t-weekly"],#t-records:checked ~ .tabbar label[for="t-records"],#t-seasons:checked ~ .tabbar label[for="t-seasons"],#t-scoring:checked ~ .tabbar label[for="t-scoring"],#t-drafts:checked ~ .tabbar label[for="t-drafts"]{color:var(--tint)}
+@keyframes paneIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.mgrlist{display:flex;flex-direction:column;background:var(--card);border-radius:12px;overflow:hidden;margin-bottom:12px}
+details.mgr{border-bottom:1px solid var(--hairline)}
+details.mgr:last-child{border-bottom:none}
+details.mgr summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px;cursor:pointer;user-select:none;-webkit-user-select:none}
+details.mgr summary::-webkit-details-marker{display:none}
+.mgr .mname{font-size:16px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mgr .mright{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.mgr .mpct{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.mgr .mtitle{font-size:12px;font-weight:700;color:var(--gold);background:var(--goldbg);border-radius:999px;padding:4px 10px;white-space:nowrap}
+.mgr .chev{width:15px;height:15px;color:var(--faint);transition:transform .25s ease;flex:0 0 auto}
+details.mgr[open] .chev{transform:rotate(90deg)}
+.mgr .mdetail{padding:0 16px 12px;animation:paneIn .25s ease}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--hairline);font-size:14.5px}
+.drow:last-child{border-bottom:none}
+.drow span{color:var(--muted)}
+.drow b{font-variant-numeric:tabular-nums;font-weight:600}
+.ic{width:18px;height:18px;vertical-align:-3px;margin-right:9px;color:var(--tint)}
+.wdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:9px;vertical-align:1px}
+#rsort-w:checked ~ .mgrlist .mgr{order:var(--ow)}
+#rsort-pct:checked ~ .mgrlist .mgr{order:var(--op)}
+#rsort-ch:checked ~ .mgrlist .mgr{order:var(--och)}
+#rsort-w:checked ~ .chips label[for="rsort-w"]{background:var(--text);color:var(--bg)}
+#rsort-pct:checked ~ .chips label[for="rsort-pct"]{background:var(--text);color:var(--bg)}
+#rsort-ch:checked ~ .chips label[for="rsort-ch"]{background:var(--text);color:var(--bg)}
+#pane-seasons .yrblock{display:none}
+#fyrse-2019:checked ~ .yrblocks #yrb-se-2019{display:block}
+#fyrse-2019:checked ~ .chips label[for="fyrse-2019"]{background:var(--text);color:var(--bg)}
+#fyrse-2020:checked ~ .yrblocks #yrb-se-2020{display:block}
+#fyrse-2020:checked ~ .chips label[for="fyrse-2020"]{background:var(--text);color:var(--bg)}
+#fyrse-2021:checked ~ .yrblocks #yrb-se-2021{display:block}
+#fyrse-2021:checked ~ .chips label[for="fyrse-2021"]{background:var(--text);color:var(--bg)}
+#fyrse-2022:checked ~ .yrblocks #yrb-se-2022{display:block}
+#fyrse-2022:checked ~ .chips label[for="fyrse-2022"]{background:var(--text);color:var(--bg)}
+#fyrse-2023:checked ~ .yrblocks #yrb-se-2023{display:block}
+#fyrse-2023:checked ~ .chips label[for="fyrse-2023"]{background:var(--text);color:var(--bg)}
+#fyrse-2024:checked ~ .yrblocks #yrb-se-2024{display:block}
+#fyrse-2024:checked ~ .chips label[for="fyrse-2024"]{background:var(--text);color:var(--bg)}
+#fyrse-2025:checked ~ .yrblocks #yrb-se-2025{display:block}
+#fyrse-2025:checked ~ .chips label[for="fyrse-2025"]{background:var(--text);color:var(--bg)}
+#fyrse-2026:checked ~ .yrblocks #yrb-se-2026{display:block}
+#fyrse-2026:checked ~ .chips label[for="fyrse-2026"]{background:var(--text);color:var(--bg)}
+#pane-drafts .yrblock{display:none}
+#pane-drafts .pblock{display:none}
+#fyrdr-2019:checked ~ .yrblocks #yrb-dr-2019{display:block}
+#fyrdr-2019:checked ~ .chips label[for="fyrdr-2019"]{background:var(--text);color:var(--bg)}
+#fyrdr-2019:checked ~ #fprdr-all:checked ~ .yrblocks #yrb-dr-2019 .pblock{display:block}
+#fyrdr-2019:checked ~ #fprdr-Akilla:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="Akilla"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-KaleemMohammed:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="KaleemMohammed"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-McNUGGETS6969:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="McNUGGETS6969"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-NikitaMazewin:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="NikitaMazewin"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-PrithviRathaur:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="PrithviRathaur"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-RSri12:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="RSri12"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-SaggyP:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="SaggyP"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-adeelio:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="adeelio"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-afraaz:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="afraaz"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-akm:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="akm"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-beowulf15:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="beowulf15"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-bkunaal24:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="bkunaal24"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-hoodieratty:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="hoodieratty"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-kaleemm98:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="kaleemm98"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-kuku24:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="kuku24"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-leaguechump:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="leaguechump"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-misbah456:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="misbah456"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-nayvadiusdawg:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="nayvadiusdawg"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-praddy13:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="praddy13"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-pranaybhandare:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="pranaybhandare"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-sbhavsar:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="sbhavsar"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-sgundlapalli:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="sgundlapalli"]{display:block}
+#fyrdr-2019:checked ~ #fprdr-tmahadik93:checked ~ .yrblocks #yrb-dr-2019 .pblock[data-p="tmahadik93"]{display:block}
+#fyrdr-2020:checked ~ .yrblocks #yrb-dr-2020{display:block}
+#fyrdr-2020:checked ~ .chips label[for="fyrdr-2020"]{background:var(--text);color:var(--bg)}
+#fyrdr-2020:checked ~ #fprdr-all:checked ~ .yrblocks #yrb-dr-2020 .pblock{display:block}
+#fyrdr-2020:checked ~ #fprdr-Akilla:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="Akilla"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-KaleemMohammed:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="KaleemMohammed"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-McNUGGETS6969:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="McNUGGETS6969"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-NikitaMazewin:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="NikitaMazewin"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-PrithviRathaur:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="PrithviRathaur"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-RSri12:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="RSri12"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-SaggyP:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="SaggyP"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-adeelio:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="adeelio"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-afraaz:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="afraaz"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-akm:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="akm"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-beowulf15:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="beowulf15"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-bkunaal24:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="bkunaal24"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-hoodieratty:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="hoodieratty"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-kaleemm98:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="kaleemm98"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-kuku24:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="kuku24"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-leaguechump:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="leaguechump"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-misbah456:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="misbah456"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-nayvadiusdawg:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="nayvadiusdawg"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-praddy13:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="praddy13"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-pranaybhandare:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="pranaybhandare"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-sbhavsar:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="sbhavsar"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-sgundlapalli:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="sgundlapalli"]{display:block}
+#fyrdr-2020:checked ~ #fprdr-tmahadik93:checked ~ .yrblocks #yrb-dr-2020 .pblock[data-p="tmahadik93"]{display:block}
+#fyrdr-2021:checked ~ .yrblocks #yrb-dr-2021{display:block}
+#fyrdr-2021:checked ~ .chips label[for="fyrdr-2021"]{background:var(--text);color:var(--bg)}
+#fyrdr-2021:checked ~ #fprdr-all:checked ~ .yrblocks #yrb-dr-2021 .pblock{display:block}
+#fyrdr-2021:checked ~ #fprdr-Akilla:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="Akilla"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-KaleemMohammed:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="KaleemMohammed"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-McNUGGETS6969:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="McNUGGETS6969"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-NikitaMazewin:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="NikitaMazewin"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-PrithviRathaur:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="PrithviRathaur"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-RSri12:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="RSri12"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-SaggyP:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="SaggyP"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-adeelio:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="adeelio"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-afraaz:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="afraaz"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-akm:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="akm"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-beowulf15:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="beowulf15"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-bkunaal24:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="bkunaal24"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-hoodieratty:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="hoodieratty"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-kaleemm98:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="kaleemm98"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-kuku24:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="kuku24"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-leaguechump:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="leaguechump"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-misbah456:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="misbah456"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-nayvadiusdawg:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="nayvadiusdawg"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-praddy13:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="praddy13"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-pranaybhandare:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="pranaybhandare"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-sbhavsar:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="sbhavsar"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-sgundlapalli:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="sgundlapalli"]{display:block}
+#fyrdr-2021:checked ~ #fprdr-tmahadik93:checked ~ .yrblocks #yrb-dr-2021 .pblock[data-p="tmahadik93"]{display:block}
+#fyrdr-2022:checked ~ .yrblocks #yrb-dr-2022{display:block}
+#fyrdr-2022:checked ~ .chips label[for="fyrdr-2022"]{background:var(--text);color:var(--bg)}
+#fyrdr-2022:checked ~ #fprdr-all:checked ~ .yrblocks #yrb-dr-2022 .pblock{display:block}
+#fyrdr-2022:checked ~ #fprdr-Akilla:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="Akilla"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-KaleemMohammed:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="KaleemMohammed"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-McNUGGETS6969:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="McNUGGETS6969"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-NikitaMazewin:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="NikitaMazewin"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-PrithviRathaur:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="PrithviRathaur"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-RSri12:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="RSri12"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-SaggyP:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="SaggyP"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-adeelio:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="adeelio"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-afraaz:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="afraaz"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-akm:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="akm"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-beowulf15:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="beowulf15"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-bkunaal24:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="bkunaal24"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-hoodieratty:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="hoodieratty"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-kaleemm98:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="kaleemm98"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-kuku24:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="kuku24"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-leaguechump:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="leaguechump"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-misbah456:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="misbah456"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-nayvadiusdawg:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="nayvadiusdawg"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-praddy13:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="praddy13"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-pranaybhandare:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="pranaybhandare"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-sbhavsar:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="sbhavsar"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-sgundlapalli:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="sgundlapalli"]{display:block}
+#fyrdr-2022:checked ~ #fprdr-tmahadik93:checked ~ .yrblocks #yrb-dr-2022 .pblock[data-p="tmahadik93"]{display:block}
+#fyrdr-2023:checked ~ .yrblocks #yrb-dr-2023{display:block}
+#fyrdr-2023:checked ~ .chips label[for="fyrdr-2023"]{background:var(--text);color:var(--bg)}
+#fyrdr-2023:checked ~ #fprdr-all:checked ~ .yrblocks #yrb-dr-2023 .pblock{display:block}
+#fyrdr-2023:checked ~ #fprdr-Akilla:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="Akilla"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-KaleemMohammed:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="KaleemMohammed"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-McNUGGETS6969:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="McNUGGETS6969"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-NikitaMazewin:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="NikitaMazewin"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-PrithviRathaur:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="PrithviRathaur"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-RSri12:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="RSri12"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-SaggyP:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="SaggyP"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-adeelio:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="adeelio"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-afraaz:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="afraaz"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-akm:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="akm"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-beowulf15:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="beowulf15"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-bkunaal24:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="bkunaal24"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-hoodieratty:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="hoodieratty"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-kaleemm98:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="kaleemm98"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-kuku24:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="kuku24"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-leaguechump:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="leaguechump"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-misbah456:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="misbah456"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-nayvadiusdawg:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="nayvadiusdawg"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-praddy13:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="praddy13"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-pranaybhandare:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="pranaybhandare"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-sbhavsar:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="sbhavsar"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-sgundlapalli:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="sgundlapalli"]{display:block}
+#fyrdr-2023:checked ~ #fprdr-tmahadik93:checked ~ .yrblocks #yrb-dr-2023 .pblock[data-p="tmahadik93"]{display:block}
+#fyrdr-2024:checked ~ .yrblocks #yrb-dr-2024{display:block}
+#fyrdr-2024:checked ~ .chips label[for="fyrdr-2024"]{background:var(--text);color:var(--bg)}
+#fyrdr-2024:checked ~ #fprdr-all:checked ~ .yrblocks #yrb-dr-2024 .pblock{display:block}
+#fyrdr-2024:checked ~ #fprdr-Akilla:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="Akilla"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-KaleemMohammed:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="KaleemMohammed"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-McNUGGETS6969:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="McNUGGETS6969"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-NikitaMazewin:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="NikitaMazewin"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-PrithviRathaur:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="PrithviRathaur"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-RSri12:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="RSri12"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-SaggyP:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="SaggyP"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-adeelio:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="adeelio"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-afraaz:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="afraaz"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-akm:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="akm"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-beowulf15:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="beowulf15"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-bkunaal24:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="bkunaal24"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-hoodieratty:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="hoodieratty"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-kaleemm98:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="kaleemm98"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-kuku24:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="kuku24"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-leaguechump:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="leaguechump"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-misbah456:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="misbah456"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-nayvadiusdawg:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="nayvadiusdawg"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-praddy13:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="praddy13"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-pranaybhandare:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="pranaybhandare"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-sbhavsar:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="sbhavsar"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-sgundlapalli:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="sgundlapalli"]{display:block}
+#fyrdr-2024:checked ~ #fprdr-tmahadik93:checked ~ .yrblocks #yrb-dr-2024 .pblock[data-p="tmahadik93"]{display:block}
+#fyrdr-2025:checked ~ .yrblocks #yrb-dr-2025{display:block}
+#fyrdr-2025:checked ~ .chips label[for="fyrdr-2025"]{background:var(--text);color:var(--bg)}
+#fyrdr-2025:checked ~ #fprdr-all:checked ~ .yrblocks #yrb-dr-2025 .pblock{display:block}
+#fyrdr-2025:checked ~ #fprdr-Akilla:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="Akilla"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-KaleemMohammed:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="KaleemMohammed"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-McNUGGETS6969:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="McNUGGETS6969"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-NikitaMazewin:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="NikitaMazewin"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-PrithviRathaur:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="PrithviRathaur"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-RSri12:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="RSri12"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-SaggyP:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="SaggyP"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-adeelio:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="adeelio"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-afraaz:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="afraaz"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-akm:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="akm"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-beowulf15:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="beowulf15"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-bkunaal24:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="bkunaal24"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-hoodieratty:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="hoodieratty"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-kaleemm98:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="kaleemm98"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-kuku24:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="kuku24"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-leaguechump:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="leaguechump"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-misbah456:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="misbah456"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-nayvadiusdawg:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="nayvadiusdawg"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-praddy13:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="praddy13"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-pranaybhandare:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="pranaybhandare"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-sbhavsar:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="sbhavsar"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-sgundlapalli:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="sgundlapalli"]{display:block}
+#fyrdr-2025:checked ~ #fprdr-tmahadik93:checked ~ .yrblocks #yrb-dr-2025 .pblock[data-p="tmahadik93"]{display:block}
+#fprdr-all:checked ~ .chips label[for="fprdr-all"]{background:var(--text);color:var(--bg)}
+#fprdr-Akilla:checked ~ .chips label[for="fprdr-Akilla"]{background:var(--text);color:var(--bg)}
+#fprdr-KaleemMohammed:checked ~ .chips label[for="fprdr-KaleemMohammed"]{background:var(--text);color:var(--bg)}
+#fprdr-McNUGGETS6969:checked ~ .chips label[for="fprdr-McNUGGETS6969"]{background:var(--text);color:var(--bg)}
+#fprdr-NikitaMazewin:checked ~ .chips label[for="fprdr-NikitaMazewin"]{background:var(--text);color:var(--bg)}
+#fprdr-PrithviRathaur:checked ~ .chips label[for="fprdr-PrithviRathaur"]{background:var(--text);color:var(--bg)}
+#fprdr-RSri12:checked ~ .chips label[for="fprdr-RSri12"]{background:var(--text);color:var(--bg)}
+#fprdr-SaggyP:checked ~ .chips label[for="fprdr-SaggyP"]{background:var(--text);color:var(--bg)}
+#fprdr-adeelio:checked ~ .chips label[for="fprdr-adeelio"]{background:var(--text);color:var(--bg)}
+#fprdr-afraaz:checked ~ .chips label[for="fprdr-afraaz"]{background:var(--text);color:var(--bg)}
+#fprdr-akm:checked ~ .chips label[for="fprdr-akm"]{background:var(--text);color:var(--bg)}
+#fprdr-beowulf15:checked ~ .chips label[for="fprdr-beowulf15"]{background:var(--text);color:var(--bg)}
+#fprdr-bkunaal24:checked ~ .chips label[for="fprdr-bkunaal24"]{background:var(--text);color:var(--bg)}
+#fprdr-hoodieratty:checked ~ .chips label[for="fprdr-hoodieratty"]{background:var(--text);color:var(--bg)}
+#fprdr-kaleemm98:checked ~ .chips label[for="fprdr-kaleemm98"]{background:var(--text);color:var(--bg)}
+#fprdr-kuku24:checked ~ .chips label[for="fprdr-kuku24"]{background:var(--text);color:var(--bg)}
+#fprdr-leaguechump:checked ~ .chips label[for="fprdr-leaguechump"]{background:var(--text);color:var(--bg)}
+#fprdr-misbah456:checked ~ .chips label[for="fprdr-misbah456"]{background:var(--text);color:var(--bg)}
+#fprdr-nayvadiusdawg:checked ~ .chips label[for="fprdr-nayvadiusdawg"]{background:var(--text);color:var(--bg)}
+#fprdr-praddy13:checked ~ .chips label[for="fprdr-praddy13"]{background:var(--text);color:var(--bg)}
+#fprdr-pranaybhandare:checked ~ .chips label[for="fprdr-pranaybhandare"]{background:var(--text);color:var(--bg)}
+#fprdr-sbhavsar:checked ~ .chips label[for="fprdr-sbhavsar"]{background:var(--text);color:var(--bg)}
+#fprdr-sgundlapalli:checked ~ .chips label[for="fprdr-sgundlapalli"]{background:var(--text);color:var(--bg)}
+#fprdr-tmahadik93:checked ~ .chips label[for="fprdr-tmahadik93"]{background:var(--text);color:var(--bg)}
+</style></head><body>
+<input type="radio" class="tabradio" name="tab" id="t-weekly" checked>
+<input type="radio" class="tabradio" name="tab" id="t-records">
+<input type="radio" class="tabradio" name="tab" id="t-seasons">
+<input type="radio" class="tabradio" name="tab" id="t-scoring">
+<input type="radio" class="tabradio" name="tab" id="t-drafts">
+<header><div class="eyebrow">Sleeper &middot; 12 teams &middot; Est. 2019</div><h1>Frequent Flyers</h1></header>
+<div class="wrap">
+
+<section class="pane" id="pane-weekly"><div class="sechead">This Week</div>
+<div class='banner'><div class='t'>2026 Season &middot; Week 1 &mdash; Final</div><div class='b'>nayvadiusdawg drops 168.7</div><div class='s'>highest score of the week &middot; updated Tue Sep 15</div></div>
+<div class='card pad'><h2>The week, in short</h2><div class='lede'><p>Week 1 is in the books, and nayvadiusdawg wasted no time setting the pace: 168.71 points, the week's high, in a 51-point drubbing of Akilla. Akilla's 117.11 leaves him 9th in scoring and 0-1 — though Caleb Williams' 37.26 was the best individual line of the week, and the only thing in that lineup that showed up.</p><p>The week's only genuine contest was kuku24 vs sbhavsar, decided by 13.46 points. Everything else was target practice: misbah456 throttled praddy13 by 78.7, the biggest margin of the slate, with Josh Allen (35.66) doing most of the throttling. tmahadik93 also cleared 167 — apparently that was the cover charge this week.</p><p>Six teams sit at 1-0, six at 0-1, and praddy13's 88.26 has him in sole possession of last place in scoring. Early days, but the group chat has a long memory.</p></div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>Around the league</h2><ul class='cells'>
+<li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>High score: <b>nayvadiusdawg</b> (168.7)</li>
+<li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6 6 4-4 8 8"/><path d="M14 17h7v-7"/></svg>Low score: <b>praddy13</b> (88.3)</li>
+<li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>Closest game: <b>kuku24</b> 144.0 &ndash; 157.5 <b>sbhavsar</b> (by 13.5)</li>
+<li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>Blowout: <b>misbah456</b> 167.0 &ndash; 88.3 <b>praddy13</b> (by 78.7)</li>
+</ul></div>
+<div class='card'><h2 style='padding:14px 16px 0'>Week 1 Results</h2><div class='tblwrap'><table style='min-width:0'><thead><tr><th>Team</th><th class='num'>Score</th><th></th><th>Team</th><th class='num'>Score</th></tr></thead><tbody>
+<tr><td>Akilla</td><td class='num'><b>117.1</b></td><td style='color:var(--faint)'>vs</td><td><span class="wdot"></span>nayvadiusdawg</td><td class='num'><b>168.7</b></td></tr>
+<tr><td><span class="wdot"></span>tmahadik93</td><td class='num'><b>167.0</b></td><td style='color:var(--faint)'>vs</td><td>sgundlapalli</td><td class='num'><b>139.1</b></td></tr>
+<tr><td><span class="wdot"></span>misbah456</td><td class='num'><b>167.0</b></td><td style='color:var(--faint)'>vs</td><td>praddy13</td><td class='num'><b>88.3</b></td></tr>
+<tr><td>kuku24</td><td class='num'><b>144.0</b></td><td style='color:var(--faint)'>vs</td><td><span class="wdot"></span>sbhavsar</td><td class='num'><b>157.5</b></td></tr>
+<tr><td><span class="wdot"></span>akm</td><td class='num'><b>127.7</b></td><td style='color:var(--faint)'>vs</td><td>SaggyP</td><td class='num'><b>110.3</b></td></tr>
+<tr><td><span class="wdot"></span>nshah3</td><td class='num'><b>123.8</b></td><td style='color:var(--faint)'>vs</td><td>RSri12</td><td class='num'><b>103.8</b></td></tr>
+</tbody></table></div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>Top performances of Week 1</h2><div class='tblwrap'><table style='min-width:0'><thead><tr><th>Player</th><th>Pos</th><th class='num'>Pts</th><th>Manager</th></tr></thead><tbody>
+<tr><td><b>Caleb Williams</b> <span class='was'>CHI</span></td><td>QB</td><td class='num'><b>37.3</b></td><td>Akilla</td></tr>
+<tr><td><b>Josh Allen</b> <span class='was'>BUF</span></td><td>QB</td><td class='num'><b>35.7</b></td><td>misbah456</td></tr>
+<tr><td><b>Derrick Henry</b> <span class='was'>BAL</span></td><td>RB</td><td class='num'><b>34.8</b></td><td>nayvadiusdawg</td></tr>
+<tr><td><b>Kenneth Walker</b> <span class='was'>KC</span></td><td>RB</td><td class='num'><b>32.6</b></td><td>kuku24</td></tr>
+<tr><td><b>D'Andre Swift</b> <span class='was'>CHI</span></td><td>RB</td><td class='num'><b>31.9</b></td><td>RSri12</td></tr>
+<tr><td><b>Jahmyr Gibbs</b> <span class='was'>DET</span></td><td>RB</td><td class='num'><b>31.1</b></td><td>SaggyP</td></tr>
+<tr><td><b>Jalen Coker</b> <span class='was'>CAR</span></td><td>WR</td><td class='num'><b>29.8</b></td><td>misbah456</td></tr>
+<tr><td><b>Christian Watson</b> <span class='was'>GB</span></td><td>WR</td><td class='num'><b>29.7</b></td><td>misbah456</td></tr>
+</tbody></table></div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>Standings</h2><div class='tblwrap'><table style='min-width:0'><thead><tr><th>#</th><th>Team</th><th class='num'>W</th><th class='num'>L</th><th class='num'>T</th><th class='num'>PF</th><th class='num'>PA</th></tr></thead><tbody>
+<tr><td class='num'>1</td><td>nayvadiusdawg</td><td class='num'>1</td><td class='num'>0</td><td class='num'>0</td><td class='num'>168.7</td><td class='num'>117.1</td></tr>
+<tr><td class='num'>2</td><td>tmahadik93</td><td class='num'>1</td><td class='num'>0</td><td class='num'>0</td><td class='num'>167.0</td><td class='num'>139.1</td></tr>
+<tr><td class='num'>3</td><td>misbah456</td><td class='num'>1</td><td class='num'>0</td><td class='num'>0</td><td class='num'>167.0</td><td class='num'>88.3</td></tr>
+<tr><td class='num'>4</td><td>sbhavsar</td><td class='num'>1</td><td class='num'>0</td><td class='num'>0</td><td class='num'>157.5</td><td class='num'>144.0</td></tr>
+<tr><td class='num'>5</td><td>akm</td><td class='num'>1</td><td class='num'>0</td><td class='num'>0</td><td class='num'>127.7</td><td class='num'>110.3</td></tr>
+<tr><td class='num'>6</td><td>nshah3</td><td class='num'>1</td><td class='num'>0</td><td class='num'>0</td><td class='num'>123.8</td><td class='num'>103.8</td></tr>
+<tr><td class='num'>7</td><td>kuku24</td><td class='num'>0</td><td class='num'>1</td><td class='num'>0</td><td class='num'>144.0</td><td class='num'>157.5</td></tr>
+<tr><td class='num'>8</td><td>sgundlapalli</td><td class='num'>0</td><td class='num'>1</td><td class='num'>0</td><td class='num'>139.1</td><td class='num'>167.0</td></tr>
+<tr><td class='num'>9</td><td>Akilla</td><td class='num'>0</td><td class='num'>1</td><td class='num'>0</td><td class='num'>117.1</td><td class='num'>168.7</td></tr>
+<tr><td class='num'>10</td><td>SaggyP</td><td class='num'>0</td><td class='num'>1</td><td class='num'>0</td><td class='num'>110.3</td><td class='num'>127.7</td></tr>
+<tr><td class='num'>11</td><td>RSri12</td><td class='num'>0</td><td class='num'>1</td><td class='num'>0</td><td class='num'>103.8</td><td class='num'>123.8</td></tr>
+<tr><td class='num'>12</td><td>praddy13</td><td class='num'>0</td><td class='num'>1</td><td class='num'>0</td><td class='num'>88.3</td><td class='num'>167.0</td></tr>
+</tbody></table></div></div>
+</section>
+<section class="pane" id="pane-records"><div class="sechead">All-Time Records</div>
+<input type="radio" class="fradio" name="rsort" id="rsort-w" checked>
+<input type="radio" class="fradio" name="rsort" id="rsort-pct">
+<input type="radio" class="fradio" name="rsort" id="rsort-ch">
+<div class="chipslabel">Sort by</div><div class="chips"><label for="rsort-w">Wins</label><label for="rsort-pct">Win %</label><label for="rsort-ch">Titles</label></div>
+<div class="mgrlist">
+<details class='mgr' style='--ow:1;--op:2;--och:8'><summary><span class='mname'>misbah456</span><span class='mright'><span class='mpct'>0.568</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>8</b></div><div class='drow'><span>Regular season</span><b>56-41-13</b></div><div class='drow'><span>Playoffs</span><b>4-6</b></div><div class='drow'><span>Finals appearances</span><b>0</b></div></div></details>
+<details class='mgr' style='--ow:2;--op:5;--och:3'><summary><span class='mname'>akm</span><span class='mright'><span class='mpct'>0.532</span><span class='mtitle'>1 title</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>8</b></div><div class='drow'><span>Regular season</span><b>52-45-13</b></div><div class='drow'><span>Playoffs</span><b>4-3</b></div><div class='drow'><span>Finals appearances</span><b>2</b></div></div></details>
+<details class='mgr' style='--ow:3;--op:6;--och:9'><summary><span class='mname'>kuku24 <span class='was'>(was bkunaal24)</span></span><span class='mright'><span class='mpct'>0.532</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>8</b></div><div class='drow'><span>Regular season</span><b>52-45-13</b></div><div class='drow'><span>Playoffs</span><b>2-3</b></div><div class='drow'><span>Finals appearances</span><b>2</b></div></div></details>
+<details class='mgr' style='--ow:4;--op:8;--och:2'><summary><span class='mname'>Akilla</span><span class='mright'><span class='mpct'>0.523</span><span class='mtitle'>1 title</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>8</b></div><div class='drow'><span>Regular season</span><b>51-46-13</b></div><div class='drow'><span>Playoffs</span><b>4-4</b></div><div class='drow'><span>Finals appearances</span><b>2</b></div></div></details>
+<details class='mgr' style='--ow:5;--op:9;--och:4'><summary><span class='mname'>nayvadiusdawg <span class='was'>(was pranaybhandare)</span></span><span class='mright'><span class='mpct'>0.505</span><span class='mtitle'>1 title</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>8</b></div><div class='drow'><span>Regular season</span><b>49-48-13</b></div><div class='drow'><span>Playoffs</span><b>3-1</b></div><div class='drow'><span>Finals appearances</span><b>1</b></div></div></details>
+<details class='mgr' style='--ow:6;--op:10;--och:6'><summary><span class='mname'>sgundlapalli</span><span class='mright'><span class='mpct'>0.505</span><span class='mtitle'>1 title</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>8</b></div><div class='drow'><span>Regular season</span><b>49-48-13</b></div><div class='drow'><span>Playoffs</span><b>3-2</b></div><div class='drow'><span>Finals appearances</span><b>2</b></div></div></details>
+<details class='mgr' style='--ow:7;--op:13;--och:5'><summary><span class='mname'>tmahadik93</span><span class='mright'><span class='mpct'>0.477</span><span class='mtitle'>1 title</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>8</b></div><div class='drow'><span>Regular season</span><b>46-51-13</b></div><div class='drow'><span>Playoffs</span><b>2-3</b></div><div class='drow'><span>Finals appearances</span><b>1</b></div></div></details>
+<details class='mgr' style='--ow:8;--op:14;--och:7'><summary><span class='mname'>sbhavsar</span><span class='mright'><span class='mpct'>0.441</span><span class='mtitle'>1 title</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>8</b></div><div class='drow'><span>Regular season</span><b>42-55-13</b></div><div class='drow'><span>Playoffs</span><b>3-1</b></div><div class='drow'><span>Finals appearances</span><b>1</b></div></div></details>
+<details class='mgr' style='--ow:9;--op:15;--och:10'><summary><span class='mname'>SaggyP <span class='was'>(was KaleemMohammed, PrithviRathaur, NikitaMazewin)</span></span><span class='mright'><span class='mpct'>0.423</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>8</b></div><div class='drow'><span>Regular season</span><b>40-57-13</b></div><div class='drow'><span>Playoffs</span><b>3-2</b></div><div class='drow'><span>Finals appearances</span><b>1</b></div></div></details>
+<details class='mgr' style='--ow:10;--op:3;--och:12'><summary><span class='mname'>adeelio</span><span class='mright'><span class='mpct'>0.544</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>5</b></div><div class='drow'><span>Regular season</span><b>37-31-0</b></div><div class='drow'><span>Playoffs</span><b>1-3</b></div><div class='drow'><span>Finals appearances</span><b>0</b></div></div></details>
+<details class='mgr' style='--ow:11;--op:7;--och:1'><summary><span class='mname'>hoodieratty <span class='was'>(was beowulf15, leaguechump)</span></span><span class='mright'><span class='mpct'>0.529</span><span class='mtitle'>1 title</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>5</b></div><div class='drow'><span>Regular season</span><b>36-32-0</b></div><div class='drow'><span>Playoffs</span><b>3-2</b></div><div class='drow'><span>Finals appearances</span><b>1</b></div></div></details>
+<details class='mgr' style='--ow:12;--op:12;--och:13'><summary><span class='mname'>praddy13</span><span class='mright'><span class='mpct'>0.493</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>5</b></div><div class='drow'><span>Regular season</span><b>28-29-13</b></div><div class='drow'><span>Playoffs</span><b>1-2</b></div><div class='drow'><span>Finals appearances</span><b>0</b></div></div></details>
+<details class='mgr' style='--ow:13;--op:11;--och:11'><summary><span class='mname'>kaleemm98</span><span class='mright'><span class='mpct'>0.500</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>3</b></div><div class='drow'><span>Regular season</span><b>20-20-0</b></div><div class='drow'><span>Playoffs</span><b>1-2</b></div><div class='drow'><span>Finals appearances</span><b>1</b></div></div></details>
+<details class='mgr' style='--ow:14;--op:16;--och:15'><summary><span class='mname'>RSri12</span><span class='mright'><span class='mpct'>0.417</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>3</b></div><div class='drow'><span>Regular season</span><b>11-18-13</b></div><div class='drow'><span>Playoffs</span><b>0-0</b></div><div class='drow'><span>Finals appearances</span><b>0</b></div></div></details>
+<details class='mgr' style='--ow:15;--op:1;--och:16'><summary><span class='mname'>McNUGGETS6969</span><span class='mright'><span class='mpct'>0.571</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>1</b></div><div class='drow'><span>Regular season</span><b>8-6-0</b></div><div class='drow'><span>Playoffs</span><b>1-1</b></div><div class='drow'><span>Finals appearances</span><b>0</b></div></div></details>
+<details class='mgr' style='--ow:16;--op:17;--och:14'><summary><span class='mname'>afraaz</span><span class='mright'><span class='mpct'>0.286</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>1</b></div><div class='drow'><span>Regular season</span><b>4-10-0</b></div><div class='drow'><span>Playoffs</span><b>0-0</b></div><div class='drow'><span>Finals appearances</span><b>0</b></div></div></details>
+<details class='mgr' style='--ow:17;--op:4;--och:17'><summary><span class='mname'>nshah3</span><span class='mright'><span class='mpct'>0.536</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></summary><div class='mdetail'><div class='drow'><span>Seasons</span><b>1</b></div><div class='drow'><span>Regular season</span><b>1-0-13</b></div><div class='drow'><span>Playoffs</span><b>0-0</b></div><div class='drow'><span>Finals appearances</span><b>0</b></div></div></details>
+</div>
+<div class='card pad'><div class='note'>Playoff record counts championship-path games only (quarterfinals, semifinals, final) — 3rd/5th-place consolation games excluded. akm's title count verified against every final: 1 title (2024), 2 finals appearances (2021, 2024). 2026 in progress; excluded from finals/titles.</div></div>
+<div class="card"><h2 style="padding:14px 16px 0">Champions</h2><ul class="cells">
+<li><span class='pill gold'>2019</span> <b>beowulf15</b> <span class='was'>def. bkunaal24</span></li>
+<li><span class='pill gold'>2020</span> <b>Akilla</b> <span class='was'>def. kaleemm98</span></li>
+<li><span class='pill gold'>2021</span> <b>sgundlapalli</b> <span class='was'>def. akm</span></li>
+<li><span class='pill gold'>2022</span> <b>tmahadik93</b> <span class='was'>def. Akilla</span></li>
+<li><span class='pill gold'>2023</span> <b>nayvadiusdawg</b> <span class='was'>def. kuku24</span></li>
+<li><span class='pill gold'>2024</span> <b>akm</b> <span class='was'>def. SaggyP</span></li>
+<li><span class='pill gold'>2025</span> <b>sbhavsar</b> <span class='was'>def. sgundlapalli</span></li>
+<li><span class='pill'>2026</span> <span class='was'>in progress</span></li>
+</ul></div></section>
+<section class="pane" id="pane-seasons"><div class="sechead">Season by Season</div>
+<input type="radio" class="fradio" name="fyrse" id="fyrse-2019">
+<input type="radio" class="fradio" name="fyrse" id="fyrse-2020">
+<input type="radio" class="fradio" name="fyrse" id="fyrse-2021">
+<input type="radio" class="fradio" name="fyrse" id="fyrse-2022">
+<input type="radio" class="fradio" name="fyrse" id="fyrse-2023">
+<input type="radio" class="fradio" name="fyrse" id="fyrse-2024">
+<input type="radio" class="fradio" name="fyrse" id="fyrse-2025" checked>
+<input type="radio" class="fradio" name="fyrse" id="fyrse-2026">
+
+<div class="chipslabel">Season</div><div class="chips">
+<label for="fyrse-2019">2019</label>
+<label for="fyrse-2020">2020</label>
+<label for="fyrse-2021">2021</label>
+<label for="fyrse-2022">2022</label>
+<label for="fyrse-2023">2023</label>
+<label for="fyrse-2024">2024</label>
+<label for="fyrse-2025">2025</label>
+<label for="fyrse-2026">2026</label>
+</div>
+<div class="yrblocks">
+<div class='yrblock' id='yrb-se-2019'>
+<div class='banner'><div class='t'>2019 Champion</div><div class='b'>beowulf15</div><div class='s'>def. bkunaal24 in the final</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2019 Standings</h2><div class='tblwrap'><table><thead><tr><th>Team</th><th class='num'>Record</th><th class='num'>Playoff</th><th class='num'>PF</th><th class='num'>PA</th></tr></thead><tbody>
+<tr><td>beowulf15</td><td class='num'>10-3-0</td><td class='num'>2-0</td><td class='num'>1585.7</td><td class='num'>1290.5</td></tr>
+<tr><td>bkunaal24</td><td class='num'>8-5-0</td><td class='num'>1-1</td><td class='num'>1464.1</td><td class='num'>1277.2</td></tr>
+<tr><td>misbah456</td><td class='num'>7-6-0</td><td class='num'>1-1</td><td class='num'>1387.9</td><td class='num'>1412.4</td></tr>
+<tr><td>Akilla</td><td class='num'>7-6-0</td><td class='num'>1-1</td><td class='num'>1425.7</td><td class='num'>1428.8</td></tr>
+<tr><td>akm</td><td class='num'>7-6-0</td><td class='num'>0-0</td><td class='num'>1321.0</td><td class='num'>1296.6</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>7-6-0</td><td class='num'>0-0</td><td class='num'>1325.9</td><td class='num'>1368.6</td></tr>
+<tr><td>kaleemm98</td><td class='num'>7-6-0</td><td class='num'>0-1</td><td class='num'>1455.3</td><td class='num'>1368.0</td></tr>
+<tr><td>adeelio</td><td class='num'>7-6-0</td><td class='num'>0-1</td><td class='num'>1410.4</td><td class='num'>1449.1</td></tr>
+<tr><td>pranaybhandare</td><td class='num'>5-8-0</td><td class='num'>0-0</td><td class='num'>1301.2</td><td class='num'>1336.6</td></tr>
+<tr><td>KaleemMohammed</td><td class='num'>5-8-0</td><td class='num'>0-0</td><td class='num'>1252.0</td><td class='num'>1464.3</td></tr>
+<tr><td>tmahadik93</td><td class='num'>4-9-0</td><td class='num'>0-0</td><td class='num'>1341.2</td><td class='num'>1395.2</td></tr>
+<tr><td>sbhavsar</td><td class='num'>4-9-0</td><td class='num'>0-0</td><td class='num'>1183.7</td><td class='num'>1366.8</td></tr>
+</tbody></table></div></div></div>
+<div class='yrblock' id='yrb-se-2020'>
+<div class='banner'><div class='t'>2020 Champion</div><div class='b'>Akilla</div><div class='s'>def. kaleemm98 in the final</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2020 Standings</h2><div class='tblwrap'><table><thead><tr><th>Team</th><th class='num'>Record</th><th class='num'>Playoff</th><th class='num'>PF</th><th class='num'>PA</th></tr></thead><tbody>
+<tr><td>Akilla</td><td class='num'>9-4-0</td><td class='num'>2-0</td><td class='num'>1426.9</td><td class='num'>1270.1</td></tr>
+<tr><td>kaleemm98</td><td class='num'>9-4-0</td><td class='num'>1-1</td><td class='num'>1519.1</td><td class='num'>1481.5</td></tr>
+<tr><td>tmahadik93</td><td class='num'>8-5-0</td><td class='num'>0-1</td><td class='num'>1385.3</td><td class='num'>1379.0</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>8-5-0</td><td class='num'>0-1</td><td class='num'>1504.9</td><td class='num'>1472.5</td></tr>
+<tr><td>misbah456</td><td class='num'>7-6-0</td><td class='num'>1-1</td><td class='num'>1450.8</td><td class='num'>1396.7</td></tr>
+<tr><td>leaguechump</td><td class='num'>7-6-0</td><td class='num'>1-1</td><td class='num'>1469.6</td><td class='num'>1340.5</td></tr>
+<tr><td>kuku24</td><td class='num'>7-6-0</td><td class='num'>0-0</td><td class='num'>1296.2</td><td class='num'>1352.8</td></tr>
+<tr><td>pranaybhandare</td><td class='num'>6-7-0</td><td class='num'>0-0</td><td class='num'>1378.6</td><td class='num'>1435.3</td></tr>
+<tr><td>adeelio</td><td class='num'>6-7-0</td><td class='num'>0-0</td><td class='num'>1392.0</td><td class='num'>1382.1</td></tr>
+<tr><td>akm</td><td class='num'>5-8-0</td><td class='num'>0-0</td><td class='num'>1290.3</td><td class='num'>1396.0</td></tr>
+<tr><td>PrithviRathaur</td><td class='num'>3-10-0</td><td class='num'>0-0</td><td class='num'>1270.7</td><td class='num'>1380.4</td></tr>
+<tr><td>sbhavsar</td><td class='num'>3-10-0</td><td class='num'>0-0</td><td class='num'>1302.0</td><td class='num'>1399.3</td></tr>
+</tbody></table></div></div></div>
+<div class='yrblock' id='yrb-se-2021'>
+<div class='banner'><div class='t'>2021 Champion</div><div class='b'>sgundlapalli</div><div class='s'>def. akm in the final</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2021 Standings</h2><div class='tblwrap'><table><thead><tr><th>Team</th><th class='num'>Record</th><th class='num'>Playoff</th><th class='num'>PF</th><th class='num'>PA</th></tr></thead><tbody>
+<tr><td>misbah456</td><td class='num'>10-4-0</td><td class='num'>0-1</td><td class='num'>1564.0</td><td class='num'>1523.3</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>10-4-0</td><td class='num'>2-0</td><td class='num'>1616.2</td><td class='num'>1509.6</td></tr>
+<tr><td>kuku24</td><td class='num'>9-5-0</td><td class='num'>0-1</td><td class='num'>1598.0</td><td class='num'>1485.9</td></tr>
+<tr><td>NikitaMazewin</td><td class='num'>9-5-0</td><td class='num'>1-1</td><td class='num'>1510.8</td><td class='num'>1451.5</td></tr>
+<tr><td>Akilla</td><td class='num'>7-7-0</td><td class='num'>0-1</td><td class='num'>1565.6</td><td class='num'>1583.5</td></tr>
+<tr><td>akm</td><td class='num'>7-7-0</td><td class='num'>2-1</td><td class='num'>1536.8</td><td class='num'>1484.9</td></tr>
+<tr><td>leaguechump</td><td class='num'>6-8-0</td><td class='num'>0-0</td><td class='num'>1347.4</td><td class='num'>1418.2</td></tr>
+<tr><td>pranaybhandare</td><td class='num'>6-8-0</td><td class='num'>0-0</td><td class='num'>1475.9</td><td class='num'>1468.1</td></tr>
+<tr><td>adeelio</td><td class='num'>6-8-0</td><td class='num'>0-0</td><td class='num'>1515.0</td><td class='num'>1529.9</td></tr>
+<tr><td>sbhavsar</td><td class='num'>6-8-0</td><td class='num'>0-0</td><td class='num'>1555.5</td><td class='num'>1582.0</td></tr>
+<tr><td>tmahadik93</td><td class='num'>4-10-0</td><td class='num'>0-0</td><td class='num'>1430.9</td><td class='num'>1479.5</td></tr>
+<tr><td>kaleemm98</td><td class='num'>4-10-0</td><td class='num'>0-0</td><td class='num'>1354.0</td><td class='num'>1553.8</td></tr>
+</tbody></table></div></div></div>
+<div class='yrblock' id='yrb-se-2022'>
+<div class='banner'><div class='t'>2022 Champion</div><div class='b'>tmahadik93</div><div class='s'>def. Akilla in the final</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2022 Standings</h2><div class='tblwrap'><table><thead><tr><th>Team</th><th class='num'>Record</th><th class='num'>Playoff</th><th class='num'>PF</th><th class='num'>PA</th></tr></thead><tbody>
+<tr><td>tmahadik93</td><td class='num'>11-3-0</td><td class='num'>2-0</td><td class='num'>1661.2</td><td class='num'>1393.2</td></tr>
+<tr><td>hoodieratty</td><td class='num'>10-4-0</td><td class='num'>0-1</td><td class='num'>1605.8</td><td class='num'>1556.0</td></tr>
+<tr><td>Akilla</td><td class='num'>10-4-0</td><td class='num'>1-1</td><td class='num'>1696.0</td><td class='num'>1565.2</td></tr>
+<tr><td>adeelio</td><td class='num'>9-5-0</td><td class='num'>1-1</td><td class='num'>1679.7</td><td class='num'>1661.8</td></tr>
+<tr><td>akm</td><td class='num'>8-6-0</td><td class='num'>0-1</td><td class='num'>1713.8</td><td class='num'>1511.0</td></tr>
+<tr><td>praddy13</td><td class='num'>8-6-0</td><td class='num'>1-1</td><td class='num'>1608.1</td><td class='num'>1556.2</td></tr>
+<tr><td>SaggyP</td><td class='num'>7-7-0</td><td class='num'>0-0</td><td class='num'>1590.0</td><td class='num'>1525.1</td></tr>
+<tr><td>nayvadiusdawg</td><td class='num'>6-8-0</td><td class='num'>0-0</td><td class='num'>1541.7</td><td class='num'>1583.4</td></tr>
+<tr><td>kuku24</td><td class='num'>5-9-0</td><td class='num'>0-0</td><td class='num'>1442.5</td><td class='num'>1577.0</td></tr>
+<tr><td>sbhavsar</td><td class='num'>5-9-0</td><td class='num'>0-0</td><td class='num'>1504.6</td><td class='num'>1661.7</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>3-11-0</td><td class='num'>0-0</td><td class='num'>1374.5</td><td class='num'>1584.8</td></tr>
+<tr><td>misbah456</td><td class='num'>2-12-0</td><td class='num'>0-0</td><td class='num'>1469.3</td><td class='num'>1712.0</td></tr>
+</tbody></table></div></div></div>
+<div class='yrblock' id='yrb-se-2023'>
+<div class='banner'><div class='t'>2023 Champion</div><div class='b'>nayvadiusdawg</div><div class='s'>def. kuku24 in the final</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2023 Standings</h2><div class='tblwrap'><table><thead><tr><th>Team</th><th class='num'>Record</th><th class='num'>Playoff</th><th class='num'>PF</th><th class='num'>PA</th></tr></thead><tbody>
+<tr><td>misbah456</td><td class='num'>13-1-0</td><td class='num'>0-1</td><td class='num'>1647.1</td><td class='num'>1356.6</td></tr>
+<tr><td>kuku24</td><td class='num'>10-4-0</td><td class='num'>1-1</td><td class='num'>1712.9</td><td class='num'>1532.2</td></tr>
+<tr><td>Akilla</td><td class='num'>9-5-0</td><td class='num'>0-1</td><td class='num'>1824.7</td><td class='num'>1543.3</td></tr>
+<tr><td>nayvadiusdawg</td><td class='num'>9-5-0</td><td class='num'>3-0</td><td class='num'>1705.2</td><td class='num'>1643.3</td></tr>
+<tr><td>adeelio</td><td class='num'>9-5-0</td><td class='num'>0-1</td><td class='num'>1736.6</td><td class='num'>1656.0</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>7-7-0</td><td class='num'>0-0</td><td class='num'>1593.1</td><td class='num'>1651.5</td></tr>
+<tr><td>sbhavsar</td><td class='num'>7-7-0</td><td class='num'>1-1</td><td class='num'>1721.4</td><td class='num'>1598.1</td></tr>
+<tr><td>akm</td><td class='num'>6-8-0</td><td class='num'>0-0</td><td class='num'>1608.8</td><td class='num'>1693.5</td></tr>
+<tr><td>praddy13</td><td class='num'>5-9-0</td><td class='num'>0-0</td><td class='num'>1520.2</td><td class='num'>1581.6</td></tr>
+<tr><td>hoodieratty</td><td class='num'>3-11-0</td><td class='num'>0-0</td><td class='num'>1546.4</td><td class='num'>1711.0</td></tr>
+<tr><td>tmahadik93</td><td class='num'>3-11-0</td><td class='num'>0-0</td><td class='num'>1535.0</td><td class='num'>1830.0</td></tr>
+<tr><td>SaggyP</td><td class='num'>3-11-0</td><td class='num'>0-0</td><td class='num'>1389.0</td><td class='num'>1743.3</td></tr>
+</tbody></table></div></div></div>
+<div class='yrblock' id='yrb-se-2024'>
+<div class='banner'><div class='t'>2024 Champion</div><div class='b'>akm</div><div class='s'>def. SaggyP in the final</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2024 Standings</h2><div class='tblwrap'><table><thead><tr><th>Team</th><th class='num'>Record</th><th class='num'>Playoff</th><th class='num'>PF</th><th class='num'>PA</th></tr></thead><tbody>
+<tr><td>akm</td><td class='num'>10-4-0</td><td class='num'>2-0</td><td class='num'>1992.2</td><td class='num'>1776.1</td></tr>
+<tr><td>nayvadiusdawg</td><td class='num'>10-4-0</td><td class='num'>0-1</td><td class='num'>2116.6</td><td class='num'>1734.2</td></tr>
+<tr><td>misbah456</td><td class='num'>9-5-0</td><td class='num'>1-1</td><td class='num'>1920.1</td><td class='num'>1834.6</td></tr>
+<tr><td>praddy13</td><td class='num'>9-5-0</td><td class='num'>0-1</td><td class='num'>1776.0</td><td class='num'>1817.1</td></tr>
+<tr><td>SaggyP</td><td class='num'>8-6-0</td><td class='num'>2-1</td><td class='num'>1814.1</td><td class='num'>1828.4</td></tr>
+<tr><td>tmahadik93</td><td class='num'>7-7-0</td><td class='num'>0-1</td><td class='num'>1770.8</td><td class='num'>1780.9</td></tr>
+<tr><td>kuku24</td><td class='num'>6-8-0</td><td class='num'>0-0</td><td class='num'>1670.8</td><td class='num'>1757.2</td></tr>
+<tr><td>RSri12</td><td class='num'>6-8-0</td><td class='num'>0-0</td><td class='num'>1612.1</td><td class='num'>1695.9</td></tr>
+<tr><td>Akilla</td><td class='num'>5-9-0</td><td class='num'>0-0</td><td class='num'>1800.0</td><td class='num'>1845.0</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>5-9-0</td><td class='num'>0-0</td><td class='num'>1829.0</td><td class='num'>1951.7</td></tr>
+<tr><td>sbhavsar</td><td class='num'>5-9-0</td><td class='num'>0-0</td><td class='num'>1806.5</td><td class='num'>1780.6</td></tr>
+<tr><td>afraaz</td><td class='num'>4-10-0</td><td class='num'>0-0</td><td class='num'>1498.8</td><td class='num'>1805.6</td></tr>
+</tbody></table></div></div></div>
+<div class='yrblock' id='yrb-se-2025'>
+<div class='banner'><div class='t'>2025 Champion</div><div class='b'>sbhavsar</div><div class='s'>def. sgundlapalli in the final</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2025 Standings</h2><div class='tblwrap'><table><thead><tr><th>Team</th><th class='num'>Record</th><th class='num'>Playoff</th><th class='num'>PF</th><th class='num'>PA</th></tr></thead><tbody>
+<tr><td>sbhavsar</td><td class='num'>11-3-0</td><td class='num'>2-0</td><td class='num'>1960.2</td><td class='num'>1693.8</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>9-5-0</td><td class='num'>1-1</td><td class='num'>1720.1</td><td class='num'>1692.5</td></tr>
+<tr><td>McNUGGETS6969</td><td class='num'>8-6-0</td><td class='num'>1-1</td><td class='num'>1717.2</td><td class='num'>1760.7</td></tr>
+<tr><td>akm</td><td class='num'>8-6-0</td><td class='num'>0-1</td><td class='num'>1850.0</td><td class='num'>1708.4</td></tr>
+<tr><td>tmahadik93</td><td class='num'>8-6-0</td><td class='num'>0-1</td><td class='num'>1820.6</td><td class='num'>1740.8</td></tr>
+<tr><td>misbah456</td><td class='num'>7-7-0</td><td class='num'>1-1</td><td class='num'>1865.2</td><td class='num'>1770.0</td></tr>
+<tr><td>kuku24</td><td class='num'>7-7-0</td><td class='num'>0-0</td><td class='num'>1668.2</td><td class='num'>1722.6</td></tr>
+<tr><td>nayvadiusdawg</td><td class='num'>6-8-0</td><td class='num'>0-0</td><td class='num'>1778.6</td><td class='num'>1762.8</td></tr>
+<tr><td>praddy13</td><td class='num'>6-8-0</td><td class='num'>0-0</td><td class='num'>1699.1</td><td class='num'>1680.1</td></tr>
+<tr><td>SaggyP</td><td class='num'>5-9-0</td><td class='num'>0-0</td><td class='num'>1642.7</td><td class='num'>1748.6</td></tr>
+<tr><td>RSri12</td><td class='num'>5-9-0</td><td class='num'>0-0</td><td class='num'>1694.9</td><td class='num'>1972.4</td></tr>
+<tr><td>Akilla</td><td class='num'>4-10-0</td><td class='num'>0-0</td><td class='num'>1695.3</td><td class='num'>1859.5</td></tr>
+</tbody></table></div></div></div>
+<div class='yrblock' id='yrb-se-2026'>
+<div class='banner'><div class='t'>2026</div><div class='b'>Season in progress</div><div class='s'>regular season</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2026 Standings</h2><div class='tblwrap'><table><thead><tr><th>Team</th><th class='num'>Record</th><th class='num'>Playoff</th><th class='num'>PF</th><th class='num'>PA</th></tr></thead><tbody>
+<tr><td>misbah456</td><td class='num'>1-0-13</td><td class='num'>0-0</td><td class='num'>167.0</td><td class='num'>88.3</td></tr>
+<tr><td>nshah3</td><td class='num'>1-0-13</td><td class='num'>0-0</td><td class='num'>123.8</td><td class='num'>103.8</td></tr>
+<tr><td>akm</td><td class='num'>1-0-13</td><td class='num'>0-0</td><td class='num'>127.7</td><td class='num'>110.3</td></tr>
+<tr><td>nayvadiusdawg</td><td class='num'>1-0-13</td><td class='num'>0-0</td><td class='num'>168.7</td><td class='num'>117.1</td></tr>
+<tr><td>tmahadik93</td><td class='num'>1-0-13</td><td class='num'>0-0</td><td class='num'>167.0</td><td class='num'>139.1</td></tr>
+<tr><td>sbhavsar</td><td class='num'>1-0-13</td><td class='num'>0-0</td><td class='num'>157.5</td><td class='num'>144.0</td></tr>
+<tr><td>Akilla</td><td class='num'>0-1-13</td><td class='num'>0-0</td><td class='num'>117.1</td><td class='num'>168.7</td></tr>
+<tr><td>praddy13</td><td class='num'>0-1-13</td><td class='num'>0-0</td><td class='num'>88.3</td><td class='num'>167.0</td></tr>
+<tr><td>SaggyP</td><td class='num'>0-1-13</td><td class='num'>0-0</td><td class='num'>110.3</td><td class='num'>127.7</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>0-1-13</td><td class='num'>0-0</td><td class='num'>139.1</td><td class='num'>167.0</td></tr>
+<tr><td>kuku24</td><td class='num'>0-1-13</td><td class='num'>0-0</td><td class='num'>144.0</td><td class='num'>157.5</td></tr>
+<tr><td>RSri12</td><td class='num'>0-1-13</td><td class='num'>0-0</td><td class='num'>103.8</td><td class='num'>123.8</td></tr>
+</tbody></table></div></div></div>
+</div>
+</section>
+<section class="pane" id="pane-scoring"><div class="sechead">Scoring</div>
+<div class="card"><h2 style="padding:14px 16px 0">Most Points by Year</h2><div class="tblwrap"><table><thead><tr><th>Year</th><th>Most PF</th><th class="num">Pts</th><th>Fewest PA</th><th class="num">Pts</th></tr></thead><tbody>
+<tr><td>2019</td><td>beowulf15</td><td class='num'>1586</td><td>bkunaal24</td><td class='num'>1277</td></tr>
+<tr><td>2020</td><td>kaleemm98</td><td class='num'>1519</td><td>Akilla</td><td class='num'>1270</td></tr>
+<tr><td>2021</td><td>sgundlapalli</td><td class='num'>1616</td><td>leaguechump</td><td class='num'>1418</td></tr>
+<tr><td>2022</td><td>akm</td><td class='num'>1714</td><td>tmahadik93</td><td class='num'>1393</td></tr>
+<tr><td>2023</td><td>Akilla</td><td class='num'>1825</td><td>misbah456</td><td class='num'>1357</td></tr>
+<tr><td>2024</td><td>nayvadiusdawg</td><td class='num'>2117</td><td>RSri12</td><td class='num'>1696</td></tr>
+<tr><td>2025</td><td>sbhavsar</td><td class='num'>1960</td><td>praddy13</td><td class='num'>1680</td></tr>
+<tr><td>2026*</td><td>nayvadiusdawg</td><td class='num'>169</td><td>misbah456</td><td class='num'>88</td></tr>
+</tbody></table></div></div>
+<div class="card pad"><div class="note">*2026: season in progress.</div></div>
+<div class="card"><h2 style="padding:14px 16px 0">All-Time Points For / Against</h2><div class="tblwrap"><table><thead><tr><th>Manager</th><th class="num">PF</th><th class="num">PA</th><th class="num">Diff</th></tr></thead><tbody>
+<tr><td>Akilla</td><td class='num'>11551</td><td class='num'>11264</td><td class='num pos'>+287</td></tr>
+<tr><td>misbah456</td><td class='num'>11471</td><td class='num'>11094</td><td class='num pos'>+378</td></tr>
+<tr><td>nayvadiusdawg <span class='was'>(was pranaybhandare)</span></td><td class='num'>11466</td><td class='num'>11081</td><td class='num pos'>+386</td></tr>
+<tr><td>akm</td><td class='num'>11441</td><td class='num'>10977</td><td class='num pos'>+464</td></tr>
+<tr><td>sbhavsar</td><td class='num'>11191</td><td class='num'>11226</td><td class='num neg'>-35</td></tr>
+<tr><td>tmahadik93</td><td class='num'>11112</td><td class='num'>11138</td><td class='num neg'>-26</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>11103</td><td class='num'>11398</td><td class='num neg'>-295</td></tr>
+<tr><td>kuku24 <span class='was'>(was bkunaal24)</span></td><td class='num'>10997</td><td class='num'>10862</td><td class='num pos'>+134</td></tr>
+<tr><td>SaggyP <span class='was'>(was KaleemMohammed, PrithviRathaur, NikitaMazewin)</span></td><td class='num'>10580</td><td class='num'>11269</td><td class='num neg'>-690</td></tr>
+<tr><td>adeelio</td><td class='num'>7734</td><td class='num'>7679</td><td class='num pos'>+55</td></tr>
+<tr><td>hoodieratty <span class='was'>(was beowulf15, leaguechump)</span></td><td class='num'>7555</td><td class='num'>7316</td><td class='num pos'>+239</td></tr>
+<tr><td>praddy13</td><td class='num'>6692</td><td class='num'>6802</td><td class='num neg'>-110</td></tr>
+<tr><td>kaleemm98</td><td class='num'>4328</td><td class='num'>4403</td><td class='num neg'>-75</td></tr>
+<tr><td>RSri12</td><td class='num'>3411</td><td class='num'>3792</td><td class='num neg'>-381</td></tr>
+<tr><td>McNUGGETS6969</td><td class='num'>1717</td><td class='num'>1761</td><td class='num neg'>-43</td></tr>
+<tr><td>afraaz</td><td class='num'>1499</td><td class='num'>1806</td><td class='num neg'>-307</td></tr>
+<tr><td>nshah3</td><td class='num'>124</td><td class='num'>104</td><td class='num pos'>+20</td></tr>
+</tbody></table></div></div></section>
+<section class="pane" id="pane-drafts"><div class="sechead">Draft Value</div>
+<div class="card pad"><h2>The formula</h2><div class="lede" style="font-size:14px">For each pick: <b style="color:var(--gold)">value = (draft rank at position) &minus; (finish rank at position)</b>.<br>Draft the 25th QB and he finishes QB5 &rarr; <span class="pos">+20</span>. Draft the 2nd RB and he finishes RB70 &rarr; <span class="neg">&minus;68</span>.<br>Drafter score = sum of all their picks. 0 &asymp; drafted to expectation.</div></div>
+<input type="radio" class="fradio" name="fyrdr" id="fyrdr-2019">
+<input type="radio" class="fradio" name="fyrdr" id="fyrdr-2020">
+<input type="radio" class="fradio" name="fyrdr" id="fyrdr-2021">
+<input type="radio" class="fradio" name="fyrdr" id="fyrdr-2022">
+<input type="radio" class="fradio" name="fyrdr" id="fyrdr-2023">
+<input type="radio" class="fradio" name="fyrdr" id="fyrdr-2024">
+<input type="radio" class="fradio" name="fyrdr" id="fyrdr-2025" checked>
+<input type="radio" class="fradio" name="fprdr" id="fprdr-all" checked>
+<input type="radio" class="fradio" name="fprdr" id="fprdr-Akilla">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-KaleemMohammed">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-McNUGGETS6969">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-NikitaMazewin">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-PrithviRathaur">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-RSri12">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-SaggyP">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-adeelio">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-afraaz">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-akm">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-beowulf15">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-bkunaal24">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-hoodieratty">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-kaleemm98">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-kuku24">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-leaguechump">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-misbah456">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-nayvadiusdawg">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-praddy13">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-pranaybhandare">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-sbhavsar">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-sgundlapalli">
+<input type="radio" class="fradio" name="fprdr" id="fprdr-tmahadik93">
+<div class="chipslabel">Season</div><div class="chips">
+<label for="fyrdr-2019">2019</label>
+<label for="fyrdr-2020">2020</label>
+<label for="fyrdr-2021">2021</label>
+<label for="fyrdr-2022">2022</label>
+<label for="fyrdr-2023">2023</label>
+<label for="fyrdr-2024">2024</label>
+<label for="fyrdr-2025">2025</label>
+</div><div class="chipslabel">Manager</div><div class="chips"><label for="fprdr-all">All</label><label for="fprdr-Akilla">Akilla</label><label for="fprdr-KaleemMohammed">KaleemMohammed</label><label for="fprdr-McNUGGETS6969">McNUGGETS6969</label><label for="fprdr-NikitaMazewin">NikitaMazewin</label><label for="fprdr-PrithviRathaur">PrithviRathaur</label><label for="fprdr-RSri12">RSri12</label><label for="fprdr-SaggyP">SaggyP</label><label for="fprdr-adeelio">adeelio</label><label for="fprdr-afraaz">afraaz</label><label for="fprdr-akm">akm</label><label for="fprdr-beowulf15">beowulf15</label><label for="fprdr-bkunaal24">bkunaal24</label><label for="fprdr-hoodieratty">hoodieratty</label><label for="fprdr-kaleemm98">kaleemm98</label><label for="fprdr-kuku24">kuku24</label><label for="fprdr-leaguechump">leaguechump</label><label for="fprdr-misbah456">misbah456</label><label for="fprdr-nayvadiusdawg">nayvadiusdawg</label><label for="fprdr-praddy13">praddy13</label><label for="fprdr-pranaybhandare">pranaybhandare</label><label for="fprdr-sbhavsar">sbhavsar</label><label for="fprdr-sgundlapalli">sgundlapalli</label><label for="fprdr-tmahadik93">tmahadik93</label></div>
+<div class="yrblocks">
+<div class='yrblock' id='yrb-dr-2019'>
+<div class='banner'><div class='t'>2019 Best Drafter</div><div class='b'>beowulf15</div><div class='s'>draft score +80</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2019 Drafter Standings</h2><div class='tblwrap'><table><thead><tr><th>Drafter</th><th class='num'>Picks</th><th class='num'>Score</th></tr></thead><tbody>
+<tr><td>beowulf15</td><td class='num'>15</td><td class='num pos'>+80</td></tr>
+<tr><td>tmahadik93</td><td class='num'>15</td><td class='num pos'>+19</td></tr>
+<tr><td>Akilla</td><td class='num'>15</td><td class='num pos'>+18</td></tr>
+<tr><td>sbhavsar</td><td class='num'>15</td><td class='num pos'>+5</td></tr>
+<tr><td>adeelio</td><td class='num'>15</td><td class='num neg'>-33</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>15</td><td class='num neg'>-56</td></tr>
+<tr><td>pranaybhandare</td><td class='num'>15</td><td class='num neg'>-83</td></tr>
+<tr><td>KaleemMohammed</td><td class='num'>15</td><td class='num neg'>-101</td></tr>
+<tr><td>bkunaal24</td><td class='num'>15</td><td class='num neg'>-114</td></tr>
+<tr><td>misbah456</td><td class='num'>15</td><td class='num neg'>-120</td></tr>
+<tr><td>kaleemm98</td><td class='num'>15</td><td class='num neg'>-136</td></tr>
+<tr><td>akm</td><td class='num'>15</td><td class='num neg'>-151</td></tr>
+</tbody></table></div></div>
+<div class='pblock' data-p='Akilla'><div class='card'><h2 style='padding:14px 16px 0'>Akilla</h2><ul class='cells'><li><b>Best pick:</b> D.K. Metcalf (WR) <span class='pos'>+29</span><div class='was'>Rd 12, pick 139: WR55 &rarr; WR26</div></li><li><b>Worst pick:</b> Marquez Valdes-Scantling (WR) <span class='neg'>-23</span><div class='was'>Rd 9, pick 102: WR42 &rarr; WR65</div></li></ul></div></div>
+<div class='pblock' data-p='KaleemMohammed'><div class='card'><h2 style='padding:14px 16px 0'>KaleemMohammed</h2><ul class='cells'><li><b>Best pick:</b> Kenny Golladay (WR) <span class='pos'>+12</span><div class='was'>Rd 4, pick 45: WR18 &rarr; WR6</div></li><li><b>Worst pick:</b> Damien Harris (RB) <span class='neg'>-29</span><div class='was'>Rd 12, pick 141: RB51 &rarr; RB80</div></li></ul></div></div>
+<div class='pblock' data-p='adeelio'><div class='card'><h2 style='padding:14px 16px 0'>adeelio</h2><ul class='cells'><li><b>Best pick:</b> Derrick Henry (RB) <span class='pos'>+19</span><div class='was'>Rd 4, pick 42: RB22 &rarr; RB3</div></li><li><b>Worst pick:</b> Darwin Thompson (RB) <span class='neg'>-38</span><div class='was'>Rd 8, pick 90: RB37 &rarr; RB75</div></li></ul></div></div>
+<div class='pblock' data-p='akm'><div class='card'><h2 style='padding:14px 16px 0'>akm</h2><ul class='cells'><li><b>Best pick:</b> Golden Tate (WR) <span class='pos'>+11</span><div class='was'>Rd 12, pick 135: WR53 &rarr; WR42</div></li><li><b>Worst pick:</b> Corey Davis (WR) <span class='neg'>-27</span><div class='was'>Rd 9, pick 106: WR43 &rarr; WR70</div></li></ul></div></div>
+<div class='pblock' data-p='beowulf15'><div class='card'><h2 style='padding:14px 16px 0'>beowulf15</h2><ul class='cells'><li><b>Best pick:</b> John Brown (WR) <span class='pos'>+33</span><div class='was'>Rd 10, pick 113: WR46 &rarr; WR13</div></li><li><b>Worst pick:</b> JuJu Smith-Schuster (WR) <span class='neg'>-35</span><div class='was'>Rd 2, pick 17: WR6 &rarr; WR41</div></li></ul></div></div>
+<div class='pblock' data-p='bkunaal24'><div class='card'><h2 style='padding:14px 16px 0'>bkunaal24</h2><ul class='cells'><li><b>Best pick:</b> Chris Godwin (WR) <span class='pos'>+17</span><div class='was'>Rd 4, pick 46: WR19 &rarr; WR2</div></li><li><b>Worst pick:</b> Anthony Miller (WR) <span class='neg'>-37</span><div class='was'>Rd 11, pick 123: WR50 &rarr; WR87</div></li></ul></div></div>
+<div class='pblock' data-p='kaleemm98'><div class='card'><h2 style='padding:14px 16px 0'>kaleemm98</h2><ul class='cells'><li><b>Best pick:</b> Cooper Kupp (WR) <span class='pos'>+14</span><div class='was'>Rd 5, pick 53: WR22 &rarr; WR8</div></li><li><b>Worst pick:</b> Antonio Brown (WR) <span class='neg'>-61</span><div class='was'>Rd 2, pick 20: WR8 &rarr; WR69</div></li></ul></div></div>
+<div class='pblock' data-p='misbah456'><div class='card'><h2 style='padding:14px 16px 0'>misbah456</h2><ul class='cells'><li><b>Best pick:</b> N'Keal Harry (WR) <span class='pos'>+25</span><div class='was'>Rd 13, pick 145: WR58 &rarr; WR33</div></li><li><b>Worst pick:</b> AJ Green (WR) <span class='neg'>-58</span><div class='was'>Rd 6, pick 72: WR31 &rarr; WR89</div></li></ul></div></div>
+<div class='pblock' data-p='pranaybhandare'><div class='card'><h2 style='padding:14px 16px 0'>pranaybhandare</h2><ul class='cells'><li><b>Best pick:</b> Jamaal Williams (RB) <span class='pos'>+32</span><div class='was'>Rd 14, pick 167: RB55 &rarr; RB23</div></li><li><b>Worst pick:</b> Tony Pollard (RB) <span class='neg'>-44</span><div class='was'>Rd 8, pick 95: RB39 &rarr; RB83</div></li></ul></div></div>
+<div class='pblock' data-p='sbhavsar'><div class='card'><h2 style='padding:14px 16px 0'>sbhavsar</h2><ul class='cells'><li><b>Best pick:</b> Courtland Sutton (WR) <span class='pos'>+41</span><div class='was'>Rd 14, pick 158: WR59 &rarr; WR18</div></li><li><b>Worst pick:</b> Brandin Cooks (WR) <span class='neg'>-33</span><div class='was'>Rd 4, pick 38: WR15 &rarr; WR48</div></li></ul></div></div>
+<div class='pblock' data-p='sgundlapalli'><div class='card'><h2 style='padding:14px 16px 0'>sgundlapalli</h2><ul class='cells'><li><b>Best pick:</b> Mark Andrews (TE) <span class='pos'>+10</span><div class='was'>Rd 12, pick 136: TE12 &rarr; TE2</div></li><li><b>Worst pick:</b> Dante Pettis (WR) <span class='neg'>-39</span><div class='was'>Rd 10, pick 112: WR45 &rarr; WR84</div></li></ul></div></div>
+<div class='pblock' data-p='tmahadik93'><div class='card'><h2 style='padding:14px 16px 0'>tmahadik93</h2><ul class='cells'><li><b>Best pick:</b> Michael Gallup (WR) <span class='pos'>+21</span><div class='was'>Rd 10, pick 109: WR44 &rarr; WR23</div></li><li><b>Worst pick:</b> Drew Brees (QB) <span class='neg'>-10</span><div class='was'>Rd 8, pick 85: QB6 &rarr; QB16</div></li></ul></div></div>
+</div>
+<div class='yrblock' id='yrb-dr-2020'>
+<div class='banner'><div class='t'>2020 Best Drafter</div><div class='b'>misbah456</div><div class='s'>draft score +37</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2020 Drafter Standings</h2><div class='tblwrap'><table><thead><tr><th>Drafter</th><th class='num'>Picks</th><th class='num'>Score</th></tr></thead><tbody>
+<tr><td>misbah456</td><td class='num'>15</td><td class='num pos'>+37</td></tr>
+<tr><td>PrithviRathaur</td><td class='num'>15</td><td class='num neg'>-20</td></tr>
+<tr><td>tmahadik93</td><td class='num'>15</td><td class='num neg'>-22</td></tr>
+<tr><td>kaleemm98</td><td class='num'>15</td><td class='num neg'>-28</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>15</td><td class='num neg'>-31</td></tr>
+<tr><td>leaguechump</td><td class='num'>15</td><td class='num neg'>-45</td></tr>
+<tr><td>adeelio</td><td class='num'>15</td><td class='num neg'>-62</td></tr>
+<tr><td>Akilla</td><td class='num'>15</td><td class='num neg'>-84</td></tr>
+<tr><td>kuku24</td><td class='num'>15</td><td class='num neg'>-104</td></tr>
+<tr><td>sbhavsar</td><td class='num'>15</td><td class='num neg'>-139</td></tr>
+<tr><td>akm</td><td class='num'>15</td><td class='num neg'>-157</td></tr>
+<tr><td>pranaybhandare</td><td class='num'>15</td><td class='num neg'>-193</td></tr>
+</tbody></table></div></div>
+<div class='pblock' data-p='Akilla'><div class='card'><h2 style='padding:14px 16px 0'>Akilla</h2><ul class='cells'><li><b>Best pick:</b> Robby Anderson (WR) <span class='pos'>+37</span><div class='was'>Rd 12, pick 142: WR58 &rarr; WR21</div></li><li><b>Worst pick:</b> Marlon Mack (RB) <span class='neg'>-47</span><div class='was'>Rd 7, pick 75: RB32 &rarr; RB79</div></li></ul></div></div>
+<div class='pblock' data-p='PrithviRathaur'><div class='card'><h2 style='padding:14px 16px 0'>PrithviRathaur</h2><ul class='cells'><li><b>Best pick:</b> Chase Claypool (WR) <span class='pos'>+44</span><div class='was'>Rd 13, pick 148: WR61 &rarr; WR17</div></li><li><b>Worst pick:</b> Michael Thomas (WR) <span class='neg'>-54</span><div class='was'>Rd 1, pick 4: WR1 &rarr; WR55</div></li></ul></div></div>
+<div class='pblock' data-p='adeelio'><div class='card'><h2 style='padding:14px 16px 0'>adeelio</h2><ul class='cells'><li><b>Best pick:</b> Adrian Peterson (RB) <span class='pos'>+23</span><div class='was'>Rd 15, pick 174: RB54 &rarr; RB31</div></li><li><b>Worst pick:</b> A.J. Dillon (RB) <span class='neg'>-32</span><div class='was'>Rd 14, pick 163: RB52 &rarr; RB84</div></li></ul></div></div>
+<div class='pblock' data-p='akm'><div class='card'><h2 style='padding:14px 16px 0'>akm</h2><ul class='cells'><li><b>Best pick:</b> Jamison Crowder (WR) <span class='pos'>+16</span><div class='was'>Rd 11, pick 128: WR51 &rarr; WR35</div></li><li><b>Worst pick:</b> Tevin Coleman (RB) <span class='neg'>-41</span><div class='was'>Rd 9, pick 104: RB40 &rarr; RB81</div></li></ul></div></div>
+<div class='pblock' data-p='kaleemm98'><div class='card'><h2 style='padding:14px 16px 0'>kaleemm98</h2><ul class='cells'><li><b>Best pick:</b> Darrell Henderson (RB) <span class='pos'>+24</span><div class='was'>Rd 12, pick 135: RB49 &rarr; RB25</div></li><li><b>Worst pick:</b> Matt Breida (RB) <span class='neg'>-32</span><div class='was'>Rd 9, pick 106: RB42 &rarr; RB74</div></li></ul></div></div>
+<div class='pblock' data-p='kuku24'><div class='card'><h2 style='padding:14px 16px 0'>kuku24</h2><ul class='cells'><li><b>Best pick:</b> Antonio Gibson (RB) <span class='pos'>+25</span><div class='was'>Rd 7, pick 74: RB31 &rarr; RB6</div></li><li><b>Worst pick:</b> Saquon Barkley (RB) <span class='neg'>-68</span><div class='was'>Rd 1, pick 2: RB2 &rarr; RB70</div></li></ul></div></div>
+<div class='pblock' data-p='leaguechump'><div class='card'><h2 style='padding:14px 16px 0'>leaguechump</h2><ul class='cells'><li><b>Best pick:</b> Ronald Jones (RB) <span class='pos'>+23</span><div class='was'>Rd 7, pick 79: RB34 &rarr; RB11</div></li><li><b>Worst pick:</b> A.J. Green (WR) <span class='neg'>-36</span><div class='was'>Rd 6, pick 66: WR27 &rarr; WR63</div></li></ul></div></div>
+<div class='pblock' data-p='misbah456'><div class='card'><h2 style='padding:14px 16px 0'>misbah456</h2><ul class='cells'><li><b>Best pick:</b> N'Keal Harry (WR) <span class='pos'>+22</span><div class='was'>Rd 11, pick 121: WR48 &rarr; WR26</div></li><li><b>Worst pick:</b> Christian McCaffrey (RB) <span class='neg'>-29</span><div class='was'>Rd 1, pick 1: RB1 &rarr; RB30</div></li></ul></div></div>
+<div class='pblock' data-p='pranaybhandare'><div class='card'><h2 style='padding:14px 16px 0'>pranaybhandare</h2><ul class='cells'><li><b>Best pick:</b> Tyreek Hill (WR) <span class='pos'>+2</span><div class='was'>Rd 1, pick 11: WR3 &rarr; WR1</div></li><li><b>Worst pick:</b> Tarik Cohen (RB) <span class='neg'>-45</span><div class='was'>Rd 7, pick 83: RB35 &rarr; RB80</div></li></ul></div></div>
+<div class='pblock' data-p='sbhavsar'><div class='card'><h2 style='padding:14px 16px 0'>sbhavsar</h2><ul class='cells'><li><b>Best pick:</b> Brandon Aiyuk (WR) <span class='pos'>+24</span><div class='was'>Rd 13, pick 149: WR62 &rarr; WR38</div></li><li><b>Worst pick:</b> Kenny Golladay (WR) <span class='neg'>-43</span><div class='was'>Rd 3, pick 29: WR9 &rarr; WR52</div></li></ul></div></div>
+<div class='pblock' data-p='sgundlapalli'><div class='card'><h2 style='padding:14px 16px 0'>sgundlapalli</h2><ul class='cells'><li><b>Best pick:</b> Chase Edmonds (RB) <span class='pos'>+22</span><div class='was'>Rd 11, pick 132: RB48 &rarr; RB26</div></li><li><b>Worst pick:</b> Courtland Sutton (WR) <span class='neg'>-52</span><div class='was'>Rd 5, pick 60: WR26 &rarr; WR78</div></li></ul></div></div>
+<div class='pblock' data-p='tmahadik93'><div class='card'><h2 style='padding:14px 16px 0'>tmahadik93</h2><ul class='cells'><li><b>Best pick:</b> Justin Jefferson (WR) <span class='pos'>+48</span><div class='was'>Rd 11, pick 129: WR52 &rarr; WR4</div></li><li><b>Worst pick:</b> Bryce Love (RB) <span class='neg'>-34</span><div class='was'>Rd 15, pick 177: RB56 &rarr; RB90</div></li></ul></div></div>
+</div>
+<div class='yrblock' id='yrb-dr-2021'>
+<div class='banner'><div class='t'>2021 Best Drafter</div><div class='b'>NikitaMazewin</div><div class='s'>draft score +46</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2021 Drafter Standings</h2><div class='tblwrap'><table><thead><tr><th>Drafter</th><th class='num'>Picks</th><th class='num'>Score</th></tr></thead><tbody>
+<tr><td>NikitaMazewin</td><td class='num'>15</td><td class='num pos'>+46</td></tr>
+<tr><td>adeelio</td><td class='num'>15</td><td class='num pos'>+15</td></tr>
+<tr><td>Akilla</td><td class='num'>15</td><td class='num neg'>-44</td></tr>
+<tr><td>leaguechump</td><td class='num'>15</td><td class='num neg'>-46</td></tr>
+<tr><td>tmahadik93</td><td class='num'>15</td><td class='num neg'>-56</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>15</td><td class='num neg'>-58</td></tr>
+<tr><td>akm</td><td class='num'>15</td><td class='num neg'>-67</td></tr>
+<tr><td>kaleemm98</td><td class='num'>15</td><td class='num neg'>-81</td></tr>
+<tr><td>kuku24</td><td class='num'>15</td><td class='num neg'>-93</td></tr>
+<tr><td>misbah456</td><td class='num'>15</td><td class='num neg'>-95</td></tr>
+<tr><td>sbhavsar</td><td class='num'>15</td><td class='num neg'>-110</td></tr>
+<tr><td>pranaybhandare</td><td class='num'>15</td><td class='num neg'>-174</td></tr>
+</tbody></table></div></div>
+<div class='pblock' data-p='Akilla'><div class='card'><h2 style='padding:14px 16px 0'>Akilla</h2><ul class='cells'><li><b>Best pick:</b> Leonard Fournette (RB) <span class='pos'>+27</span><div class='was'>Rd 7, pick 83: RB32 &rarr; RB5</div></li><li><b>Worst pick:</b> Raheem Mostert (RB) <span class='neg'>-61</span><div class='was'>Rd 6, pick 62: RB26 &rarr; RB87</div></li></ul></div></div>
+<div class='pblock' data-p='NikitaMazewin'><div class='card'><h2 style='padding:14px 16px 0'>NikitaMazewin</h2><ul class='cells'><li><b>Best pick:</b> Ja'Marr Chase (WR) <span class='pos'>+23</span><div class='was'>Rd 6, pick 71: WR29 &rarr; WR6</div></li><li><b>Worst pick:</b> Clyde Edwards-Helaire (RB) <span class='neg'>-20</span><div class='was'>Rd 3, pick 26: RB16 &rarr; RB36</div></li></ul></div></div>
+<div class='pblock' data-p='adeelio'><div class='card'><h2 style='padding:14px 16px 0'>adeelio</h2><ul class='cells'><li><b>Best pick:</b> Deebo Samuel (WR) <span class='pos'>+36</span><div class='was'>Rd 8, pick 88: WR39 &rarr; WR3</div></li><li><b>Worst pick:</b> Julio Jones (WR) <span class='neg'>-40</span><div class='was'>Rd 4, pick 40: WR16 &rarr; WR56</div></li></ul></div></div>
+<div class='pblock' data-p='akm'><div class='card'><h2 style='padding:14px 16px 0'>akm</h2><ul class='cells'><li><b>Best pick:</b> James Conner (RB) <span class='pos'>+28</span><div class='was'>Rd 8, pick 89: RB34 &rarr; RB6</div></li><li><b>Worst pick:</b> Chris Carson (RB) <span class='neg'>-36</span><div class='was'>Rd 3, pick 32: RB17 &rarr; RB53</div></li></ul></div></div>
+<div class='pblock' data-p='kaleemm98'><div class='card'><h2 style='padding:14px 16px 0'>kaleemm98</h2><ul class='cells'><li><b>Best pick:</b> Nelson Agholor (WR) <span class='pos'>+16</span><div class='was'>Rd 12, pick 142: WR61 &rarr; WR45</div></li><li><b>Worst pick:</b> Ronald Jones (RB) <span class='neg'>-43</span><div class='was'>Rd 6, pick 70: RB31 &rarr; RB74</div></li></ul></div></div>
+<div class='pblock' data-p='kuku24'><div class='card'><h2 style='padding:14px 16px 0'>kuku24</h2><ul class='cells'><li><b>Best pick:</b> Joe Mixon (RB) <span class='pos'>+10</span><div class='was'>Rd 2, pick 19: RB13 &rarr; RB3</div></li><li><b>Worst pick:</b> Trey Sermon (RB) <span class='neg'>-34</span><div class='was'>Rd 6, pick 67: RB30 &rarr; RB64</div></li></ul></div></div>
+<div class='pblock' data-p='leaguechump'><div class='card'><h2 style='padding:14px 16px 0'>leaguechump</h2><ul class='cells'><li><b>Best pick:</b> Jakobi Meyers (WR) <span class='pos'>+28</span><div class='was'>Rd 12, pick 141: WR60 &rarr; WR32</div></li><li><b>Worst pick:</b> Jerry Jeudy (WR) <span class='neg'>-24</span><div class='was'>Rd 6, pick 69: WR28 &rarr; WR52</div></li></ul></div></div>
+<div class='pblock' data-p='misbah456'><div class='card'><h2 style='padding:14px 16px 0'>misbah456</h2><ul class='cells'><li><b>Best pick:</b> Javonte Williams (RB) <span class='pos'>+10</span><div class='was'>Rd 5, pick 60: RB25 &rarr; RB15</div></li><li><b>Worst pick:</b> Michael Thomas (WR) <span class='neg'>-59</span><div class='was'>Rd 6, pick 61: WR25 &rarr; WR84</div></li></ul></div></div>
+<div class='pblock' data-p='pranaybhandare'><div class='card'><h2 style='padding:14px 16px 0'>pranaybhandare</h2><ul class='cells'><li><b>Best pick:</b> Mike Williams (WR) <span class='pos'>+33</span><div class='was'>Rd 9, pick 97: WR44 &rarr; WR11</div></li><li><b>Worst pick:</b> Gus Edwards (RB) <span class='neg'>-77</span><div class='was'>Rd 4, pick 48: RB21 &rarr; RB98</div></li></ul></div></div>
+<div class='pblock' data-p='sbhavsar'><div class='card'><h2 style='padding:14px 16px 0'>sbhavsar</h2><ul class='cells'><li><b>Best pick:</b> Brandin Cooks (WR) <span class='pos'>+23</span><div class='was'>Rd 9, pick 101: WR45 &rarr; WR22</div></li><li><b>Worst pick:</b> JuJu Smith-Schuster (WR) <span class='neg'>-33</span><div class='was'>Rd 7, pick 77: WR33 &rarr; WR66</div></li></ul></div></div>
+<div class='pblock' data-p='sgundlapalli'><div class='card'><h2 style='padding:14px 16px 0'>sgundlapalli</h2><ul class='cells'><li><b>Best pick:</b> Darnell Mooney (WR) <span class='pos'>+25</span><div class='was'>Rd 11, pick 130: WR55 &rarr; WR30</div></li><li><b>Worst pick:</b> Calvin Ridley (WR) <span class='neg'>-47</span><div class='was'>Rd 2, pick 15: WR4 &rarr; WR51</div></li></ul></div></div>
+<div class='pblock' data-p='tmahadik93'><div class='card'><h2 style='padding:14px 16px 0'>tmahadik93</h2><ul class='cells'><li><b>Best pick:</b> Michael Pittman (WR) <span class='pos'>+33</span><div class='was'>Rd 10, pick 114: WR50 &rarr; WR17</div></li><li><b>Worst pick:</b> Allen Robinson (WR) <span class='neg'>-48</span><div class='was'>Rd 3, pick 31: WR11 &rarr; WR59</div></li></ul></div></div>
+</div>
+<div class='yrblock' id='yrb-dr-2022'>
+<div class='banner'><div class='t'>2022 Best Drafter</div><div class='b'>akm</div><div class='s'>draft score +23</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2022 Drafter Standings</h2><div class='tblwrap'><table><thead><tr><th>Drafter</th><th class='num'>Picks</th><th class='num'>Score</th></tr></thead><tbody>
+<tr><td>akm</td><td class='num'>15</td><td class='num pos'>+23</td></tr>
+<tr><td>praddy13</td><td class='num'>15</td><td class='num pos'>+10</td></tr>
+<tr><td>Akilla</td><td class='num'>15</td><td class='num '>+0</td></tr>
+<tr><td>hoodieratty</td><td class='num'>15</td><td class='num neg'>-7</td></tr>
+<tr><td>nayvadiusdawg</td><td class='num'>15</td><td class='num neg'>-17</td></tr>
+<tr><td>SaggyP</td><td class='num'>15</td><td class='num neg'>-31</td></tr>
+<tr><td>adeelio</td><td class='num'>15</td><td class='num neg'>-52</td></tr>
+<tr><td>tmahadik93</td><td class='num'>15</td><td class='num neg'>-73</td></tr>
+<tr><td>sbhavsar</td><td class='num'>15</td><td class='num neg'>-85</td></tr>
+<tr><td>kuku24</td><td class='num'>15</td><td class='num neg'>-91</td></tr>
+<tr><td>misbah456</td><td class='num'>15</td><td class='num neg'>-123</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>15</td><td class='num neg'>-154</td></tr>
+</tbody></table></div></div>
+<div class='pblock' data-p='Akilla'><div class='card'><h2 style='padding:14px 16px 0'>Akilla</h2><ul class='cells'><li><b>Best pick:</b> Tony Pollard (RB) <span class='pos'>+27</span><div class='was'>Rd 7, pick 79: RB34 &rarr; RB7</div></li><li><b>Worst pick:</b> Javonte Williams (RB) <span class='neg'>-47</span><div class='was'>Rd 2, pick 18: RB12 &rarr; RB59</div></li></ul></div></div>
+<div class='pblock' data-p='SaggyP'><div class='card'><h2 style='padding:14px 16px 0'>SaggyP</h2><ul class='cells'><li><b>Best pick:</b> Garrett Wilson (WR) <span class='pos'>+38</span><div class='was'>Rd 12, pick 139: WR57 &rarr; WR19</div></li><li><b>Worst pick:</b> Skyy Moore (WR) <span class='neg'>-36</span><div class='was'>Rd 10, pick 115: WR48 &rarr; WR84</div></li></ul></div></div>
+<div class='pblock' data-p='adeelio'><div class='card'><h2 style='padding:14px 16px 0'>adeelio</h2><ul class='cells'><li><b>Best pick:</b> Josh Jacobs (RB) <span class='pos'>+21</span><div class='was'>Rd 4, pick 48: RB22 &rarr; RB1</div></li><li><b>Worst pick:</b> Zamir White (RB) <span class='neg'>-31</span><div class='was'>Rd 15, pick 169: RB58 &rarr; RB89</div></li></ul></div></div>
+<div class='pblock' data-p='akm'><div class='card'><h2 style='padding:14px 16px 0'>akm</h2><ul class='cells'><li><b>Best pick:</b> Tyler Lockett (WR) <span class='pos'>+36</span><div class='was'>Rd 9, pick 108: WR44 &rarr; WR8</div></li><li><b>Worst pick:</b> Cam Akers (RB) <span class='neg'>-26</span><div class='was'>Rd 4, pick 37: RB19 &rarr; RB45</div></li></ul></div></div>
+<div class='pblock' data-p='hoodieratty'><div class='card'><h2 style='padding:14px 16px 0'>hoodieratty</h2><ul class='cells'><li><b>Best pick:</b> Jakobi Meyers (WR) <span class='pos'>+28</span><div class='was'>Rd 15, pick 176: WR65 &rarr; WR37</div></li><li><b>Worst pick:</b> Robert Woods (WR) <span class='neg'>-19</span><div class='was'>Rd 9, pick 104: WR43 &rarr; WR62</div></li></ul></div></div>
+<div class='pblock' data-p='kuku24'><div class='card'><h2 style='padding:14px 16px 0'>kuku24</h2><ul class='cells'><li><b>Best pick:</b> Dameon Pierce (RB) <span class='pos'>+13</span><div class='was'>Rd 6, pick 64: RB28 &rarr; RB15</div></li><li><b>Worst pick:</b> Darnell Mooney (WR) <span class='neg'>-31</span><div class='was'>Rd 7, pick 81: WR33 &rarr; WR64</div></li></ul></div></div>
+<div class='pblock' data-p='misbah456'><div class='card'><h2 style='padding:14px 16px 0'>misbah456</h2><ul class='cells'><li><b>Best pick:</b> Rachaad White (RB) <span class='pos'>+20</span><div class='was'>Rd 14, pick 159: RB57 &rarr; RB37</div></li><li><b>Worst pick:</b> Elijah Mitchell (RB) <span class='neg'>-37</span><div class='was'>Rd 6, pick 63: RB27 &rarr; RB64</div></li></ul></div></div>
+<div class='pblock' data-p='nayvadiusdawg'><div class='card'><h2 style='padding:14px 16px 0'>nayvadiusdawg</h2><ul class='cells'><li><b>Best pick:</b> Tyler Boyd (WR) <span class='pos'>+24</span><div class='was'>Rd 11, pick 124: WR53 &rarr; WR29</div></li><li><b>Worst pick:</b> Chase Edmonds (RB) <span class='neg'>-26</span><div class='was'>Rd 6, pick 69: RB30 &rarr; RB56</div></li></ul></div></div>
+<div class='pblock' data-p='praddy13'><div class='card'><h2 style='padding:14px 16px 0'>praddy13</h2><ul class='cells'><li><b>Best pick:</b> Amari Cooper (WR) <span class='pos'>+20</span><div class='was'>Rd 7, pick 77: WR32 &rarr; WR12</div></li><li><b>Worst pick:</b> Diontae Johnson (WR) <span class='neg'>-16</span><div class='was'>Rd 4, pick 44: WR19 &rarr; WR35</div></li></ul></div></div>
+<div class='pblock' data-p='sbhavsar'><div class='card'><h2 style='padding:14px 16px 0'>sbhavsar</h2><ul class='cells'><li><b>Best pick:</b> Jamaal Williams (RB) <span class='pos'>+35</span><div class='was'>Rd 10, pick 119: RB48 &rarr; RB13</div></li><li><b>Worst pick:</b> DeVante Parker (WR) <span class='neg'>-39</span><div class='was'>Rd 11, pick 122: WR51 &rarr; WR90</div></li></ul></div></div>
+<div class='pblock' data-p='sgundlapalli'><div class='card'><h2 style='padding:14px 16px 0'>sgundlapalli</h2><ul class='cells'><li><b>Best pick:</b> Jaylen Waddle (WR) <span class='pos'>+17</span><div class='was'>Rd 5, pick 59: WR26 &rarr; WR9</div></li><li><b>Worst pick:</b> Elijah Moore (WR) <span class='neg'>-32</span><div class='was'>Rd 8, pick 86: WR35 &rarr; WR67</div></li></ul></div></div>
+<div class='pblock' data-p='tmahadik93'><div class='card'><h2 style='padding:14px 16px 0'>tmahadik93</h2><ul class='cells'><li><b>Best pick:</b> Chris Olave (WR) <span class='pos'>+20</span><div class='was'>Rd 9, pick 99: WR40 &rarr; WR20</div></li><li><b>Worst pick:</b> Hunter Renfrow (WR) <span class='neg'>-37</span><div class='was'>Rd 8, pick 94: WR37 &rarr; WR74</div></li></ul></div></div>
+</div>
+<div class='yrblock' id='yrb-dr-2023'>
+<div class='banner'><div class='t'>2023 Best Drafter</div><div class='b'>sbhavsar</div><div class='s'>draft score +31</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2023 Drafter Standings</h2><div class='tblwrap'><table><thead><tr><th>Drafter</th><th class='num'>Picks</th><th class='num'>Score</th></tr></thead><tbody>
+<tr><td>sbhavsar</td><td class='num'>15</td><td class='num pos'>+31</td></tr>
+<tr><td>Akilla</td><td class='num'>15</td><td class='num pos'>+11</td></tr>
+<tr><td>akm</td><td class='num'>15</td><td class='num neg'>-4</td></tr>
+<tr><td>misbah456</td><td class='num'>15</td><td class='num neg'>-6</td></tr>
+<tr><td>kuku24</td><td class='num'>15</td><td class='num neg'>-10</td></tr>
+<tr><td>adeelio</td><td class='num'>15</td><td class='num neg'>-20</td></tr>
+<tr><td>SaggyP</td><td class='num'>15</td><td class='num neg'>-80</td></tr>
+<tr><td>tmahadik93</td><td class='num'>15</td><td class='num neg'>-102</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>15</td><td class='num neg'>-114</td></tr>
+<tr><td>praddy13</td><td class='num'>15</td><td class='num neg'>-130</td></tr>
+<tr><td>hoodieratty</td><td class='num'>15</td><td class='num neg'>-150</td></tr>
+<tr><td>nayvadiusdawg</td><td class='num'>15</td><td class='num neg'>-176</td></tr>
+</tbody></table></div></div>
+<div class='pblock' data-p='Akilla'><div class='card'><h2 style='padding:14px 16px 0'>Akilla</h2><ul class='cells'><li><b>Best pick:</b> Raheem Mostert (RB) <span class='pos'>+38</span><div class='was'>Rd 9, pick 108: RB40 &rarr; RB2</div></li><li><b>Worst pick:</b> Ronald Jones (RB) <span class='neg'>-28</span><div class='was'>Rd 14, pick 157: RB56 &rarr; RB84</div></li></ul></div></div>
+<div class='pblock' data-p='SaggyP'><div class='card'><h2 style='padding:14px 16px 0'>SaggyP</h2><ul class='cells'><li><b>Best pick:</b> Kareem Hunt (RB) <span class='pos'>+15</span><div class='was'>Rd 12, pick 136: RB51 &rarr; RB36</div></li><li><b>Worst pick:</b> Jaxon Smith-Njigba (WR) <span class='neg'>-17</span><div class='was'>Rd 6, pick 64: WR27 &rarr; WR44</div></li></ul></div></div>
+<div class='pblock' data-p='adeelio'><div class='card'><h2 style='padding:14px 16px 0'>adeelio</h2><ul class='cells'><li><b>Best pick:</b> Brian Robinson (RB) <span class='pos'>+24</span><div class='was'>Rd 8, pick 91: RB36 &rarr; RB12</div></li><li><b>Worst pick:</b> Michael Gallup (WR) <span class='neg'>-25</span><div class='was'>Rd 15, pick 174: WR64 &rarr; WR89</div></li></ul></div></div>
+<div class='pblock' data-p='akm'><div class='card'><h2 style='padding:14px 16px 0'>akm</h2><ul class='cells'><li><b>Best pick:</b> Jakobi Meyers (WR) <span class='pos'>+25</span><div class='was'>Rd 10, pick 117: WR50 &rarr; WR25</div></li><li><b>Worst pick:</b> Austin Ekeler (RB) <span class='neg'>-22</span><div class='was'>Rd 1, pick 4: RB2 &rarr; RB24</div></li></ul></div></div>
+<div class='pblock' data-p='hoodieratty'><div class='card'><h2 style='padding:14px 16px 0'>hoodieratty</h2><ul class='cells'><li><b>Best pick:</b> Chuba Hubbard (RB) <span class='pos'>+27</span><div class='was'>Rd 13, pick 151: RB55 &rarr; RB28</div></li><li><b>Worst pick:</b> Nick Chubb (RB) <span class='neg'>-58</span><div class='was'>Rd 1, pick 7: RB4 &rarr; RB62</div></li></ul></div></div>
+<div class='pblock' data-p='kuku24'><div class='card'><h2 style='padding:14px 16px 0'>kuku24</h2><ul class='cells'><li><b>Best pick:</b> Tank Dell (WR) <span class='pos'>+37</span><div class='was'>Rd 12, pick 135: WR59 &rarr; WR22</div></li><li><b>Worst pick:</b> Garrett Wilson (WR) <span class='neg'>-16</span><div class='was'>Rd 2, pick 15: WR7 &rarr; WR23</div></li></ul></div></div>
+<div class='pblock' data-p='misbah456'><div class='card'><h2 style='padding:14px 16px 0'>misbah456</h2><ul class='cells'><li><b>Best pick:</b> Nico Collins (WR) <span class='pos'>+42</span><div class='was'>Rd 11, pick 128: WR55 &rarr; WR13</div></li><li><b>Worst pick:</b> Cooper Kupp (WR) <span class='neg'>-31</span><div class='was'>Rd 2, pick 17: WR9 &rarr; WR40</div></li></ul></div></div>
+<div class='pblock' data-p='nayvadiusdawg'><div class='card'><h2 style='padding:14px 16px 0'>nayvadiusdawg</h2><ul class='cells'><li><b>Best pick:</b> Rachaad White (RB) <span class='pos'>+23</span><div class='was'>Rd 6, pick 68: RB28 &rarr; RB5</div></li><li><b>Worst pick:</b> J.K. Dobbins (RB) <span class='neg'>-49</span><div class='was'>Rd 5, pick 53: RB21 &rarr; RB70</div></li></ul></div></div>
+<div class='pblock' data-p='praddy13'><div class='card'><h2 style='padding:14px 16px 0'>praddy13</h2><ul class='cells'><li><b>Best pick:</b> Isiah Pacheco (RB) <span class='pos'>+16</span><div class='was'>Rd 6, pick 72: RB30 &rarr; RB14</div></li><li><b>Worst pick:</b> Justin Jefferson (WR) <span class='neg'>-40</span><div class='was'>Rd 1, pick 1: WR1 &rarr; WR41</div></li></ul></div></div>
+<div class='pblock' data-p='sbhavsar'><div class='card'><h2 style='padding:14px 16px 0'>sbhavsar</h2><ul class='cells'><li><b>Best pick:</b> Gus Edwards (RB) <span class='pos'>+37</span><div class='was'>Rd 15, pick 171: RB59 &rarr; RB22</div></li><li><b>Worst pick:</b> Damien Harris (RB) <span class='neg'>-30</span><div class='was'>Rd 11, pick 123: RB46 &rarr; RB76</div></li></ul></div></div>
+<div class='pblock' data-p='sgundlapalli'><div class='card'><h2 style='padding:14px 16px 0'>sgundlapalli</h2><ul class='cells'><li><b>Best pick:</b> Devin Singletary (RB) <span class='pos'>+11</span><div class='was'>Rd 12, pick 134: RB50 &rarr; RB39</div></li><li><b>Worst pick:</b> Rashaad Penny (RB) <span class='neg'>-37</span><div class='was'>Rd 10, pick 110: RB41 &rarr; RB78</div></li></ul></div></div>
+<div class='pblock' data-p='tmahadik93'><div class='card'><h2 style='padding:14px 16px 0'>tmahadik93</h2><ul class='cells'><li><b>Best pick:</b> James Cook (RB) <span class='pos'>+16</span><div class='was'>Rd 6, pick 71: RB29 &rarr; RB13</div></li><li><b>Worst pick:</b> Allen Lazard (WR) <span class='neg'>-32</span><div class='was'>Rd 10, pick 119: WR52 &rarr; WR84</div></li></ul></div></div>
+</div>
+<div class='yrblock' id='yrb-dr-2024'>
+<div class='banner'><div class='t'>2024 Best Drafter</div><div class='b'>akm</div><div class='s'>draft score +48</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2024 Drafter Standings</h2><div class='tblwrap'><table><thead><tr><th>Drafter</th><th class='num'>Picks</th><th class='num'>Score</th></tr></thead><tbody>
+<tr><td>akm</td><td class='num'>16</td><td class='num pos'>+48</td></tr>
+<tr><td>praddy13</td><td class='num'>16</td><td class='num pos'>+16</td></tr>
+<tr><td>sgundlapalli</td><td class='num'>16</td><td class='num pos'>+2</td></tr>
+<tr><td>nayvadiusdawg</td><td class='num'>16</td><td class='num neg'>-2</td></tr>
+<tr><td>misbah456</td><td class='num'>16</td><td class='num neg'>-12</td></tr>
+<tr><td>Akilla</td><td class='num'>16</td><td class='num neg'>-24</td></tr>
+<tr><td>sbhavsar</td><td class='num'>16</td><td class='num neg'>-62</td></tr>
+<tr><td>SaggyP</td><td class='num'>16</td><td class='num neg'>-94</td></tr>
+<tr><td>RSri12</td><td class='num'>16</td><td class='num neg'>-103</td></tr>
+<tr><td>kuku24</td><td class='num'>16</td><td class='num neg'>-124</td></tr>
+<tr><td>tmahadik93</td><td class='num'>16</td><td class='num neg'>-175</td></tr>
+<tr><td>afraaz</td><td class='num'>16</td><td class='num neg'>-210</td></tr>
+</tbody></table></div></div>
+<div class='pblock' data-p='Akilla'><div class='card'><h2 style='padding:14px 16px 0'>Akilla</h2><ul class='cells'><li><b>Best pick:</b> Bucky Irving (RB) <span class='pos'>+33</span><div class='was'>Rd 14, pick 159: RB52 &rarr; RB19</div></li><li><b>Worst pick:</b> Michael Wilson (WR) <span class='neg'>-33</span><div class='was'>Rd 13, pick 154: WR61 &rarr; WR94</div></li></ul></div></div>
+<div class='pblock' data-p='RSri12'><div class='card'><h2 style='padding:14px 16px 0'>RSri12</h2><ul class='cells'><li><b>Best pick:</b> Jakobi Meyers (WR) <span class='pos'>+30</span><div class='was'>Rd 13, pick 146: WR57 &rarr; WR27</div></li><li><b>Worst pick:</b> Christian McCaffrey (RB) <span class='neg'>-49</span><div class='was'>Rd 1, pick 2: RB1 &rarr; RB50</div></li></ul></div></div>
+<div class='pblock' data-p='SaggyP'><div class='card'><h2 style='padding:14px 16px 0'>SaggyP</h2><ul class='cells'><li><b>Best pick:</b> David Montgomery (RB) <span class='pos'>+10</span><div class='was'>Rd 4, pick 46: RB20 &rarr; RB10</div></li><li><b>Worst pick:</b> Brandon Aiyuk (WR) <span class='neg'>-49</span><div class='was'>Rd 3, pick 27: WR12 &rarr; WR61</div></li></ul></div></div>
+<div class='pblock' data-p='afraaz'><div class='card'><h2 style='padding:14px 16px 0'>afraaz</h2><ul class='cells'><li><b>Best pick:</b> Malik Nabers (WR) <span class='pos'>+2</span><div class='was'>Rd 3, pick 36: WR18 &rarr; WR16</div></li><li><b>Worst pick:</b> Hollywood Brown (WR) <span class='neg'>-52</span><div class='was'>Rd 9, pick 108: WR45 &rarr; WR97</div></li></ul></div></div>
+<div class='pblock' data-p='akm'><div class='card'><h2 style='padding:14px 16px 0'>akm</h2><ul class='cells'><li><b>Best pick:</b> Jerry Jeudy (WR) <span class='pos'>+41</span><div class='was'>Rd 12, pick 136: WR52 &rarr; WR11</div></li><li><b>Worst pick:</b> Christian Watson (WR) <span class='neg'>-22</span><div class='was'>Rd 9, pick 105: WR44 &rarr; WR66</div></li></ul></div></div>
+<div class='pblock' data-p='kuku24'><div class='card'><h2 style='padding:14px 16px 0'>kuku24</h2><ul class='cells'><li><b>Best pick:</b> Jordan Mason (RB) <span class='pos'>+23</span><div class='was'>Rd 14, pick 165: RB55 &rarr; RB32</div></li><li><b>Worst pick:</b> Chris Olave (WR) <span class='neg'>-42</span><div class='was'>Rd 2, pick 21: WR10 &rarr; WR52</div></li></ul></div></div>
+<div class='pblock' data-p='misbah456'><div class='card'><h2 style='padding:14px 16px 0'>misbah456</h2><ul class='cells'><li><b>Best pick:</b> Courtland Sutton (WR) <span class='pos'>+38</span><div class='was'>Rd 10, pick 120: WR48 &rarr; WR10</div></li><li><b>Worst pick:</b> Deebo Samuel (WR) <span class='neg'>-32</span><div class='was'>Rd 3, pick 25: WR11 &rarr; WR43</div></li></ul></div></div>
+<div class='pblock' data-p='nayvadiusdawg'><div class='card'><h2 style='padding:14px 16px 0'>nayvadiusdawg</h2><ul class='cells'><li><b>Best pick:</b> Drake London (WR) <span class='pos'>+9</span><div class='was'>Rd 3, pick 31: WR16 &rarr; WR7</div></li><li><b>Worst pick:</b> Jaleel McLaughlin (RB) <span class='neg'>-24</span><div class='was'>Rd 13, pick 151: RB50 &rarr; RB74</div></li></ul></div></div>
+<div class='pblock' data-p='praddy13'><div class='card'><h2 style='padding:14px 16px 0'>praddy13</h2><ul class='cells'><li><b>Best pick:</b> Brian Thomas (WR) <span class='pos'>+37</span><div class='was'>Rd 10, pick 110: WR46 &rarr; WR9</div></li><li><b>Worst pick:</b> Trey Benson (RB) <span class='neg'>-27</span><div class='was'>Rd 9, pick 107: RB36 &rarr; RB63</div></li></ul></div></div>
+<div class='pblock' data-p='sbhavsar'><div class='card'><h2 style='padding:14px 16px 0'>sbhavsar</h2><ul class='cells'><li><b>Best pick:</b> Jordan Addison (WR) <span class='pos'>+29</span><div class='was'>Rd 9, pick 101: WR43 &rarr; WR14</div></li><li><b>Worst pick:</b> Curtis Samuel (WR) <span class='neg'>-42</span><div class='was'>Rd 11, pick 125: WR50 &rarr; WR92</div></li></ul></div></div>
+<div class='pblock' data-p='sgundlapalli'><div class='card'><h2 style='padding:14px 16px 0'>sgundlapalli</h2><ul class='cells'><li><b>Best pick:</b> Jaxon Smith-Njigba (WR) <span class='pos'>+34</span><div class='was'>Rd 8, pick 91: WR40 &rarr; WR6</div></li><li><b>Worst pick:</b> Jahan Dotson (WR) <span class='neg'>-32</span><div class='was'>Rd 15, pick 174: WR63 &rarr; WR95</div></li></ul></div></div>
+<div class='pblock' data-p='tmahadik93'><div class='card'><h2 style='padding:14px 16px 0'>tmahadik93</h2><ul class='cells'><li><b>Best pick:</b> George Pickens (WR) <span class='pos'>+7</span><div class='was'>Rd 6, pick 65: WR30 &rarr; WR23</div></li><li><b>Worst pick:</b> Adonai Mitchell (WR) <span class='neg'>-31</span><div class='was'>Rd 12, pick 137: WR53 &rarr; WR84</div></li></ul></div></div>
+</div>
+<div class='yrblock' id='yrb-dr-2025'>
+<div class='banner'><div class='t'>2025 Best Drafter</div><div class='b'>sgundlapalli</div><div class='s'>draft score +27</div></div>
+<div class='card'><h2 style='padding:14px 16px 0'>2025 Drafter Standings</h2><div class='tblwrap'><table><thead><tr><th>Drafter</th><th class='num'>Picks</th><th class='num'>Score</th></tr></thead><tbody>
+<tr><td>sgundlapalli</td><td class='num'>16</td><td class='num pos'>+27</td></tr>
+<tr><td>akm</td><td class='num'>16</td><td class='num pos'>+14</td></tr>
+<tr><td>McNUGGETS6969</td><td class='num'>16</td><td class='num neg'>-16</td></tr>
+<tr><td>praddy13</td><td class='num'>16</td><td class='num neg'>-43</td></tr>
+<tr><td>sbhavsar</td><td class='num'>16</td><td class='num neg'>-57</td></tr>
+<tr><td>tmahadik93</td><td class='num'>16</td><td class='num neg'>-62</td></tr>
+<tr><td>misbah456</td><td class='num'>16</td><td class='num neg'>-81</td></tr>
+<tr><td>SaggyP</td><td class='num'>16</td><td class='num neg'>-81</td></tr>
+<tr><td>RSri12</td><td class='num'>16</td><td class='num neg'>-83</td></tr>
+<tr><td>nayvadiusdawg</td><td class='num'>16</td><td class='num neg'>-90</td></tr>
+<tr><td>Akilla</td><td class='num'>16</td><td class='num neg'>-125</td></tr>
+<tr><td>kuku24</td><td class='num'>16</td><td class='num neg'>-157</td></tr>
+</tbody></table></div></div>
+<div class='pblock' data-p='Akilla'><div class='card'><h2 style='padding:14px 16px 0'>Akilla</h2><ul class='cells'><li><b>Best pick:</b> Green Bay Packers (DEF) <span class='pos'>+7</span><div class='was'>Rd 16, pick 184: DEF12 &rarr; DEF5</div></li><li><b>Worst pick:</b> Adam Thielen (WR) <span class='neg'>-27</span><div class='was'>Rd 15, pick 177: WR61 &rarr; WR88</div></li></ul></div></div>
+<div class='pblock' data-p='McNUGGETS6969'><div class='card'><h2 style='padding:14px 16px 0'>McNUGGETS6969</h2><ul class='cells'><li><b>Best pick:</b> Michael Pittman (WR) <span class='pos'>+43</span><div class='was'>Rd 11, pick 126: WR52 &rarr; WR9</div></li><li><b>Worst pick:</b> Marvin Harrison (WR) <span class='neg'>-20</span><div class='was'>Rd 3, pick 30: WR13 &rarr; WR33</div></li></ul></div></div>
+<div class='pblock' data-p='RSri12'><div class='card'><h2 style='padding:14px 16px 0'>RSri12</h2><ul class='cells'><li><b>Best pick:</b> Wan'Dale Robinson (WR) <span class='pos'>+34</span><div class='was'>Rd 16, pick 189: WR63 &rarr; WR29</div></li><li><b>Worst pick:</b> Brandon Aiyuk (WR) <span class='neg'>-46</span><div class='was'>Rd 10, pick 117: WR49 &rarr; WR95</div></li></ul></div></div>
+<div class='pblock' data-p='SaggyP'><div class='card'><h2 style='padding:14px 16px 0'>SaggyP</h2><ul class='cells'><li><b>Best pick:</b> Rico Dowdle (RB) <span class='pos'>+41</span><div class='was'>Rd 14, pick 161: RB56 &rarr; RB15</div></li><li><b>Worst pick:</b> Malik Nabers (WR) <span class='neg'>-51</span><div class='was'>Rd 1, pick 8: WR4 &rarr; WR55</div></li></ul></div></div>
+<div class='pblock' data-p='akm'><div class='card'><h2 style='padding:14px 16px 0'>akm</h2><ul class='cells'><li><b>Best pick:</b> Woody Marks (RB) <span class='pos'>+29</span><div class='was'>Rd 16, pick 188: RB58 &rarr; RB29</div></li><li><b>Worst pick:</b> Mike Evans (WR) <span class='neg'>-49</span><div class='was'>Rd 4, pick 44: WR18 &rarr; WR67</div></li></ul></div></div>
+<div class='pblock' data-p='kuku24'><div class='card'><h2 style='padding:14px 16px 0'>kuku24</h2><ul class='cells'><li><b>Best pick:</b> Keenan Allen (WR) <span class='pos'>+28</span><div class='was'>Rd 11, pick 132: WR54 &rarr; WR26</div></li><li><b>Worst pick:</b> Terry McLaurin (WR) <span class='neg'>-39</span><div class='was'>Rd 4, pick 37: WR14 &rarr; WR53</div></li></ul></div></div>
+<div class='pblock' data-p='misbah456'><div class='card'><h2 style='padding:14px 16px 0'>misbah456</h2><ul class='cells'><li><b>Best pick:</b> Javonte Williams (RB) <span class='pos'>+30</span><div class='was'>Rd 9, pick 103: RB37 &rarr; RB7</div></li><li><b>Worst pick:</b> Kaleb Johnson (RB) <span class='neg'>-44</span><div class='was'>Rd 7, pick 79: RB29 &rarr; RB73</div></li></ul></div></div>
+<div class='pblock' data-p='nayvadiusdawg'><div class='card'><h2 style='padding:14px 16px 0'>nayvadiusdawg</h2><ul class='cells'><li><b>Best pick:</b> Kareem Hunt (RB) <span class='pos'>+26</span><div class='was'>Rd 15, pick 179: RB57 &rarr; RB31</div></li><li><b>Worst pick:</b> Tyreek Hill (WR) <span class='neg'>-44</span><div class='was'>Rd 4, pick 38: WR15 &rarr; WR59</div></li></ul></div></div>
+<div class='pblock' data-p='praddy13'><div class='card'><h2 style='padding:14px 16px 0'>praddy13</h2><ul class='cells'><li><b>Best pick:</b> Chris Olave (WR) <span class='pos'>+21</span><div class='was'>Rd 7, pick 74: WR33 &rarr; WR12</div></li><li><b>Worst pick:</b> Tre' Harris (WR) <span class='neg'>-28</span><div class='was'>Rd 16, pick 191: WR64 &rarr; WR92</div></li></ul></div></div>
+<div class='pblock' data-p='sbhavsar'><div class='card'><h2 style='padding:14px 16px 0'>sbhavsar</h2><ul class='cells'><li><b>Best pick:</b> Jaxon Smith-Njigba (WR) <span class='pos'>+15</span><div class='was'>Rd 4, pick 39: WR16 &rarr; WR1</div></li><li><b>Worst pick:</b> Joe Mixon (RB) <span class='neg'>-41</span><div class='was'>Rd 9, pick 106: RB40 &rarr; RB81</div></li></ul></div></div>
+<div class='pblock' data-p='sgundlapalli'><div class='card'><h2 style='padding:14px 16px 0'>sgundlapalli</h2><ul class='cells'><li><b>Best pick:</b> Jaylen Waddle (WR) <span class='pos'>+26</span><div class='was'>Rd 7, pick 75: WR34 &rarr; WR8</div></li><li><b>Worst pick:</b> Justin Jefferson (WR) <span class='neg'>-22</span><div class='was'>Rd 1, pick 3: WR2 &rarr; WR24</div></li></ul></div></div>
+<div class='pblock' data-p='tmahadik93'><div class='card'><h2 style='padding:14px 16px 0'>tmahadik93</h2><ul class='cells'><li><b>Best pick:</b> Emeka Egbuka (WR) <span class='pos'>+18</span><div class='was'>Rd 6, pick 72: WR32 &rarr; WR14</div></li><li><b>Worst pick:</b> Jalen McMillan (WR) <span class='neg'>-29</span><div class='was'>Rd 16, pick 192: WR65 &rarr; WR94</div></li></ul></div></div>
+</div>
+</div>
+</section>
+</div>
+<footer>Regular-season records &amp; scoring &middot; Playoff record: championship-path games only (no 3rd/5th-place games) &middot; 2026 in progress &middot; Draft value = (draft rank at position) &minus; (finish rank at position)</footer>
+<nav class="tabbar">
+<label for="t-weekly"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h6M7 13h10M7 17h6"/></svg><span>Week</span></label>
+<label for="t-records"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 5.5H5a1 1 0 0 0-1 1c0 2.2 1.8 4 4.5 4M16 5.5h3a1 1 0 0 1 1 1c0 2.2-1.8 4-4.5 4"/><path d="M12 13v4M8.5 21h7"/></svg><span>Records</span></label>
+<label for="t-seasons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Seasons</span></label>
+<label for="t-scoring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M7 20v-7M12 20V6M17 20v-4"/></svg><span>Scoring</span></label>
+<label for="t-drafts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2.5" width="6" height="4" rx="1"/><path d="M9 11h6M9 15h6"/></svg><span>Drafts</span></label>
+</nav>
+</body></html>
