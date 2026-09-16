@@ -58,6 +58,13 @@ th.sdesc::after{content:' 93';color:var(--tint)}
 #h2hout{font-size:15px;line-height:1.7}
 #h2hout .big{font-size:22px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
 #h2hout .sub{color:var(--muted);font-size:13.5px;margin-top:6px}
+.h2hgames{margin-top:12px;border:1px solid var(--hairline);border-radius:12px;overflow:hidden}
+.h2hgames summary{padding:11px 12px;font-weight:700;font-size:14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.h2hgames summary::-webkit-details-marker{display:none}
+.h2hgames summary .chev{color:var(--faint);transition:transform .15s}
+.h2hgames[open] summary .chev{transform:rotate(180deg)}
+.h2hgames .gtwrap{max-height:320px;overflow:auto;border-top:1px solid var(--hairline)}
+.h2hgames table{margin:0;font-size:13.5px}
 .racewrap{padding:6px 8px 4px}
 .race svg{display:block;width:100%;height:auto}
 .racelegend{display:flex;flex-wrap:wrap;gap:6px;padding:10px 8px 8px}
@@ -6994,11 +7001,24 @@ OWNERS.forEach(function(p){ oname[p[0]] = p[1]; });
     var last = games[games.length - 1];
     var lr = {s: last[0], l: last[1], a: oname[last[2]], x: last[3], b: oname[last[4]], y: last[5]};
     var lead = wa === wb ? 'All square' : '<b>' + esc(oname[wa > wb ? a : b]) + '</b> leads';
+    var rows = '';
+    for (var i = games.length - 1; i >= 0; i--) {
+      var g = games[i], tie = g[3] === g[5];
+      var wob = g[3] > g[5] ? g[2] : g[4], lob = g[3] > g[5] ? g[4] : g[2];
+      rows += '<tr><td>' + esc(g[0]) + '</td><td>' + esc(g[1]) + '</td>' +
+        '<td><b>' + (tie ? 'Tie' : esc(oname[wob])) + '</b></td>' +
+        '<td class="num">' + Math.max(g[3], g[5]).toFixed(1) + '</td>' +
+        '<td>' + (tie ? esc(oname[g[2]]) + ' / ' + esc(oname[g[4]]) : esc(oname[lob])) + '</td>' +
+        '<td class="num">' + Math.min(g[3], g[5]).toFixed(1) + '</td></tr>';
+    }
     out.innerHTML = '<div class="big">' + lead + ' ' + wa + '–' + wb + (t ? '–' + t : '') + '</div>' +
       '<div class="sub">' + games.length + ' meetings &middot; total points ' + pa.toFixed(1) + ' – ' + pb.toFixed(1) + '</div>' +
       '<div class="sub">Biggest blowout — ' + fmt(blow, true) + '</div>' +
       '<div class="sub">Closest game — ' + fmt(close, true) + '</div>' +
-      '<div class="sub">Last meeting — ' + fmt(lr, false) + '</div>';
+      '<div class="sub">Last meeting — ' + fmt(lr, false) + '</div>' +
+      '<details class="h2hgames"><summary><span>All ' + games.length + ' matchups</span><span class="chev">▾</span></summary>' +
+      '<div class="gtwrap"><table><thead><tr><th>Season</th><th>Week</th><th>Winner</th><th class="num">Pts</th><th>Loser</th><th class="num">Pts</th></tr></thead><tbody>' +
+      rows + '</tbody></table></div></details>';
   }
   ha.addEventListener('change', render);
   hb.addEventListener('change', render);
